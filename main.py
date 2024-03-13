@@ -66,5 +66,14 @@ async def dice(ctx,*arg):
     embed = discord.Embed(title=":game_die:DICES( {} )".format(di_max), description=di_res, color=0xffcc00)
     await ctx.send(embed=embed)  
 
+# error syori
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        embed = discord.Embed(title=":question:UNKNOWN COMMAND", description="# そんなコマンドはない", color=0xff0000)
+        await ctx.send(embed=embed)
+    else:
+        raise error
+
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
