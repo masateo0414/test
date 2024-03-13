@@ -33,6 +33,16 @@ async def shout(ctx,*arg):
     await ctx.send(arg)
     await ctx.send(embed=discord.Embed(title=":boom:SPRINT SHOUT", description="**【○に文字を入れて言葉を完成させよ】**\n# {}".format(quiz), color=sh_col))
 
+#!!coin
+@bot.command()
+async def coin(ctx):
+    if random.randint(1,2) == 1:
+        coin_deme = "<:sei:1133968046915076116>"
+    else:
+        coin_deme = "<:si:1133966404001996881>"
+
+    embed = discord.Embed(title=":coin:COIN TOSS", description="# {}".format(coin_deme), color=0xffcc00)
+    await ctx.send(embed=embed)
 
 #!!dice
 @bot.command()
