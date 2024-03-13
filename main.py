@@ -22,7 +22,7 @@ async def call(ctx):
 #!!shout
 @bot.command()
 async def shout(ctx,*arg):
-    if arg == "hard":
+    if arg[0] == "hard":
         quiz = f_shout.hard()
         sh_col = discord.Colour.red()
     else:
