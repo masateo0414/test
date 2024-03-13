@@ -58,3 +58,14 @@ def normal():
     
     return ms_q
 
+def hard():
+    ms_q = ""
+    
+    for p in random.choice(ms_ph):
+        if p == "o":
+            ms_q += "○"
+        else:
+            ms_q += random.choice(ms_l)
+    
+    return ms_q
+
