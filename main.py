@@ -22,15 +22,13 @@ async def call(ctx):
 #!!shout
 @bot.command()
 async def shout(ctx,*arg):
+    quiz = f_shout.normal()
+    sh_col = discord.Colour.green()
+
     if arg[0] == "hard":
         quiz = f_shout.hard()
         sh_col = discord.Colour.red()
-    elif arg[0] == "":
-        quiz = f_shout.normal()
-        sh_col = discord.Colour.green()
 
-    await ctx.send(quiz)
-    await ctx.send(arg)
     await ctx.send(embed=discord.Embed(title=":boom:SPRINT SHOUT", description="**【○に文字を入れて言葉を完成させよ】**\n# {}".format(quiz), color=sh_col))
 
 
