@@ -20,6 +20,7 @@ async def call(ctx):
     await ctx.send("マ！")
 
 #!!shout
+@bot.command()
 async def shout(ctx,arg):
     quiz = f_shout.normal()
 
