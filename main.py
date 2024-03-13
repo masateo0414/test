@@ -1,6 +1,8 @@
 import discord
 import os
+import random
 from discord.ext import commands
+import f_shout
 
 bot = commands.Bot(command_prefix="!!", intents=discord.Intents.all())
 
@@ -16,6 +18,13 @@ async def on_ready():
 @bot.command()
 async def call(ctx):
     await ctx.send("マ！")
+
+#!!shout
+async def shout(ctx,arg):
+    quiz = f_shout.normal()
+
+    await ctx.send(embed=discord.Embed(title=":boom:SPRINT SHOUT", description="**【○に文字を入れて言葉を完成させよ】**\n# {}".format(quiz), color=discord.Colour.green()))
+
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
