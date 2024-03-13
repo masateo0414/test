@@ -25,7 +25,7 @@ async def shout(ctx,*arg):
     quiz = f_shout.normal()
     sh_col = discord.Colour.green()
 
-    if arg[0] == "hard":
+    if len(arg) > 0 and arg[0] == "hard":
         quiz = f_shout.hard()
         sh_col = discord.Colour.red()
 
