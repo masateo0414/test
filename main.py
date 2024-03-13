@@ -39,6 +39,7 @@ async def shout(ctx,*arg):
 async def dice(ctx,*arg):
     if len(arg) > 0:
         di_max = arg[0]
+        di_res = f_dice.roll(di_max)
 
     if len(arg) == 0:
         di_max = "2d6"
@@ -52,7 +53,7 @@ async def dice(ctx,*arg):
         di_max = "KUSODEKA"
         di_res = "# デカすぎます"
 
-    embed = discord.Embed(title=":game_die:DICES({} )".format(di_max), description=di_res, color=0xffcc00)
+    embed = discord.Embed(title=":game_die:DICES( {} )".format(di_max), description=di_res, color=0xffcc00)
     await ctx.send(embed=embed)  
 
 TOKEN = os.getenv("DISCORD_TOKEN")
