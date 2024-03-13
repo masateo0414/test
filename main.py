@@ -12,10 +12,10 @@ async def on_ready():
     await bot.tree.sync()
 
 
-#!!ping
+#!!call
 @bot.command()
-async def ping(ctx):
-    await ctx.send("Pong!")
+async def call(ctx):
+    await ctx.send("マ！")
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
