@@ -1,4 +1,5 @@
 import discord
+import os
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!!", intents=discord.Intents.all())
@@ -16,5 +17,5 @@ async def on_ready():
 async def ping(ctx):
     await ctx.send("Pong!")
 
-
-bot.run("TOKEN")
+TOKEN = os.getenv("DISCORD_TOKEN")
+bot.run(TOKEN)
