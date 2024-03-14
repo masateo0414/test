@@ -45,7 +45,6 @@ async def shout(ctx,*arg):
         quiz = f_shout.hard()
         sh_col = discord.Colour.red()
 
-    await ctx.send(arg)
     await ctx.send(embed=discord.Embed(title=":boom:SPRINT SHOUT", description="**【○に文字を入れて言葉を完成させよ】**\n# {}".format(quiz), color=sh_col))
 
 #!!coin
