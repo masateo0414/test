@@ -239,12 +239,13 @@ async def loop():
     old_now = now
 
     # 突然喋る
-    if random.randrange(50000) == 0:
+    if random.randrange(2000) == 0:
         ws_reply = workbook.worksheet("reply")
         meisi_list = ws_reply.col_values(2)
         reply = f_reply.randomSay(meisi_list)
 
         channel = bot.get_channel(1133837604991811665) #ノーマル雑談
+        # channel = bot.get_channel(testch_id)
         await channel.send(reply)
 
 
