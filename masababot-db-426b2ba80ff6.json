@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "masababot-db",
+  "private_key_id": "426b2ba80ff6dea7bbc6df9224b664199f4c0f5e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCRl8I5OgO7BW1O\nBDDxO4PdohRUIAAtCu+5wkV2g3DaU3nzkg3cW1VGRQ3NB+hLP4/pDfHBJvFSPx+o\nRFsTVhk0S6/v+3bjO4lijMP5dsWkVHq6Z53nSvWWn8uYbazyfswK+ss2I3fmCg1L\nZh8OGSsUVJ+zezwtJJoXTnKLjefc2FVMyvrjDvAdpJ42+JPYwc/Aodfa0MWkKLPw\nUg/ipBTBxbE4bhqziboSPJ+hssFKMuYRb1quW7DzpPtvooFkaCcCex70fBJKy85Y\n6imZrnCeRt8fen14vzmpq8fvd90RKPDHDEJ9yHyVsHE1m1ouaG0psrO3L2XXz6tD\nvL6+NWClAgMBAAECggEAAe46Q2WckcZFu0AFz5Aym6IsX46lL0kNbFc+nNW5v5BH\na3PGixwu0mBpwj3UoQd6fcud5tuyXasxVelJdxqXXSKFr1xik2PaPkUahdNmnMzP\n3bHa/c8Uu/3xEQ10z+MmYFXlS/1YW2rZUQDivrOkPErAa3y3RKT52xuJ8Xegcihq\n+/SkcgxuXEwIzDwHDE/pV/TZnmx7nuQU1ZwogbDGtC6LmwMGiOnQRoxjkOsM+/eZ\nWgOk2XMFVv3fqqk5764+H2Zf9lOtCy9fIF+BgRqQk18JMwh/lhRAabUzzofqtzwB\n5kDyi7lMEVkg2gfDfJagsN90zsPfNU3LK9TRZm6UGQKBgQDB7/tfRexmRUu4Kbg+\nAjmjebluubjDpjqpBBkYXd2bkFHpR28TMIFiSlENzdCEEFzJ1SQHsj3A+OtkLTlD\nPiACrArkTU/iNefFEdJ2p3Np/Xnr4GxdPXq5J2b4/RNwmo4SASmiWkIthASwAImB\nobAvC/mmN4l/AluFf2Typxp7CQKBgQDALzhHcjpNu3XH2f8TZlMNnz/+cVAYoUxE\nYBXgk98DGklyylORn5YUVF76tv0M4nffc+oN1kKszYRyH6hLq6JEsx4wDdndn4qH\n19tnMKD/Ipi5D/ZFPoPMbtdsk+WALidjKOjxySaMnDjh6pzkTYwYhiQ+aF00fpFc\nAcQ5qqfzvQKBgB2XkLOo57lzOWqQcxyDGmhnWnQawqaX5ruDdJDTQc1K6DTAQaKb\n9CIbVOLWVMrR9FaXvzetat7XHJPckrA/+oJt3fuYEGhj8UmQvpx8UJALrV7gj6hq\niR9Xc87qTt0PuD3nD4NGYnKvgkeYzWKKWWfUW/OQ5doLcguctLqR5OiBAoGAbEQt\nuFIpdlD88TFl+U/TygDE1FqRfM6hYIOgz3t+TwkoB3rjyU3WBm3hc+xSckfCsCdk\n25awyRieXIxpCvgN2hXuE7Q54BhYul5oQ6GpkRG0Z80ON8QYC7sFsS1ARQ27MqmB\nUXS4Os5nXR4GdLcbDVXEZUP1/fSvft2f5by2ESECgYEAkG5bwebbd0xJBS9InJbY\nkFfqCwwasOrfJS7droQ6FcwU26EetH+l32J6duabnX81kRwkWxNWPtehiWGrW7dI\nSRREi86WkX6j4F64xw6fUNLFHcvCv2Pd6D9lKyBvm00Nxw7zgsSiBWtRqhKGzyZo\nAY/KUN3c0zwggOSdna2QwsA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "masababotdb@masababot-db.iam.gserviceaccount.com",
+  "client_id": "108569355967040224843",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/masababotdb%40masababot-db.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -3,6 +3,8 @@ import os
 import random
 import pickle
 import datetime
+import gspread  
+from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands
 from discord.ext import tasks
 from dotenv import load_dotenv
@@ -13,12 +15,36 @@ import f_login
 
 load_dotenv()
 
+# --- このへんスプシ連携の準備(丸写し)
+
+#2つのAPIを記述しないとリフレッシュトークンを3600秒毎に発行し続けなければならない
+scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+
+#認証情報設定
+#ダウンロードしたjsonファイル名をクレデンシャル変数に設定（秘密鍵、Pythonファイルから読み込みしやすい位置に置く）
+credentials = ServiceAccountCredentials.from_json_keyfile_name('masababot-db-426b2ba80ff6.json', scope)
+
+#OAuth2の資格情報を使用してGoogle APIにログインします。
+gc = gspread.authorize(credentials)
+
+#共有設定したスプレッドシートキーを変数[SPREADSHEET_KEY]に格納→そのキーでスプシを開く
+global workbook
+SPREADSHEET_KEY = os.getenv("SPREADSHEET_KEY")
+workbook = gc.open_by_key(SPREADSHEET_KEY)
+
+# --- スプシ連携ここまで
+
+
+
 bot = commands.Bot(command_prefix="!!", intents=discord.Intents.all())
 
 #MasateoのID
 masateo_id = 414755451419230208
 #本当のゲリ
 testch_id = 1150788907953299586
+#datebase
+global dbch_id 
+dbch_id = 1217820622755987566
 #old_now初期化
 old_now = ""
 
@@ -83,8 +109,9 @@ async def dice(ctx,*arg):
 #!!login
 @bot.command()
 async def login(ctx):
-    with open("login.pkl", "rb") as f:
-        login_list = pickle.load(f)
+    #loginシートのA列を取得
+    ws_login = workbook.worksheet("login")
+    login_list = ws_login.col_values(1)
     print(login_list)
 
     if ctx.author.id in login_list and ctx.author.id != masateo_id:
@@ -111,17 +138,23 @@ async def login(ctx):
         if im_url != "":
             embed.set_image(url=im_url)
         await ctx.send(embed=embed) 
-        login_list.append(ctx.author.id)
-        with open("login.pkl","wb") as f:
-            pickle.dump(login_list, f)
+        ws_login.update_cell(len(login_list)+1, 1, ctx.author.id)
+        ws_login.update_cell(len(login_list)+1, 2, ctx.author.name)
 
 #!!login_listreset
 @bot.command()
 async def login_listreset(ctx):
-    login_list = []
-    with open("login.pkl","wb") as f:
-        pickle.dump(login_list, f)
+    worksheet = workbook.sheet1
+    worksheet.batch_clear(["A:B"])
 
+#test~
+@bot.command()
+async def dbtest(ctx):
+    worksheet = workbook.sheet1
+    worksheet.batch_clear(["A:B"])
+
+
+# -------------------------------------------------------------------------------------------
 # error syori
 @bot.event
 async def on_command_error(ctx, error):
@@ -145,9 +178,8 @@ async def loop():
     # 00:00 - login reset
     if old_now != now and now == "00:00":
         await channel.send("login reset")
-        login_list = []
-        with open("login.pkl","wb") as f:
-            pickle.dump(login_list, f)
+        worksheet = workbook.sheet1
+        worksheet.batch_clear(["A:B"])
     
     # 現在時刻更新
     old_now = now
