@@ -19,7 +19,7 @@ aiduti_dic = [ ["おはよ", ["おはよう","おはようございます:sunny:
 randomRep_dic = ["ms",
               "ms！",
               "ms……",
-              "msを"
+              "msを",
               "msかも",
               "msです",
               "msだね",
@@ -35,12 +35,12 @@ randomSay_dic = ["ms",
                  "ms！ms！",
                  "msかも",
                  "msです",
-                 "あ～msms"
+                 "あ～msms",
                  "あ！msだ",
                  "やばい　ms",
                  "msの時間",
                  "msがきてる",
-                 "# ms"
+                 "# ms",
                  
                  "わあ",
                  "うーん",
