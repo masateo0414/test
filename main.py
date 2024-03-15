@@ -175,7 +175,22 @@ async def login_listreset(ctx):
 async def talktest(ctx):
     ws_reply = workbook.worksheet("reply")
     meisi_list = ws_reply.col_values(2)
-    await ctx.send(f_reply.randomSay(meisi_list))
+    randomRep_dic = ws_reply.col_values(3)
+    randomRep_dic2 = ws_reply.col_values(4)
+    reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
+    await ctx.send(reply)
+
+#test~
+@bot.command()
+async def talkToNormal(ctx):
+    ws_reply = workbook.worksheet("reply")
+    meisi_list = ws_reply.col_values(2)
+    randomRep_dic = ws_reply.col_values(3)
+    randomRep_dic2 = ws_reply.col_values(4)
+    reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
+    channel = bot.get_channel(1133837604991811665) #ノーマル雑談
+    await channel.send(reply)
+
 
 
 #返信機能
