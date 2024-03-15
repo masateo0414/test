@@ -63,17 +63,17 @@ def aiduti(msg):
             return reply
     return None
 
-def randomReply(list):
+def randomReply(list,dic):
     meisi = random.choice(list)
-    reply = random.choice(randomRep_dic).replace("ms",meisi)
+    reply = random.choice(dic).replace("ms",meisi)
     return reply
 
-def randomSay(list):
+def randomSay(list,dic,dic2):
     meisi = random.choice(list)
-    meisi2 = random.choice(list)
+    meisi2 = list[random.randrange(len(list))]
 
     if random.randrange(5) > 0:
-        reply = random.choice(randomSay_dic).replace("ms",meisi)
+        reply = random.choice(dic).replace("ms",meisi)
     else:
-        reply = random.choice(randomSays_dic).replace("ms1",meisi).replace("ms2",meisi2)
+        reply = random.choice(dic2).replace("ms1",meisi).replace("ms2",meisi2)
     return reply

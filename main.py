@@ -200,12 +200,14 @@ async def on_message(message):
 
 # 適当発言生成
 def randomSpeak(ws):
-    if random.randrange(3) > 0:
+    if random.randrange(5) < 2:
         aiduti_list = ws.col_values(1)
         reply = aiduti_list[random.randrange(len(aiduti_list))]
     else:
         meisi_list = ws.col_values(2)
-        reply = f_reply.randomReply(meisi_list)
+        randomRep_dic = ws.col_values(3)
+        randomRep_dic2 = ws.col_values(4)
+        reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
     return reply
 
 # -------------------------------------------------------------------------------------------
