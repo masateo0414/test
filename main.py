@@ -256,7 +256,7 @@ async def loop():
     old_now = now
 
     # 突然喋る
-    if random.randrange(2000) == 0:
+    if random.randrange(8000) == 0:
         ws_reply = workbook.worksheet("reply")
         meisi_list = ws_reply.col_values(2)
         randomRep_dic = ws_reply.col_values(3)
