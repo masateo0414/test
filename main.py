@@ -259,7 +259,9 @@ async def loop():
     if random.randrange(2000) == 0:
         ws_reply = workbook.worksheet("reply")
         meisi_list = ws_reply.col_values(2)
-        reply = f_reply.randomSay(meisi_list)
+        randomRep_dic = ws_reply.col_values(3)
+        randomRep_dic2 = ws_reply.col_values(4)
+        reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
 
         channel = bot.get_channel(1133837604991811665) #ノーマル雑談
         # channel = bot.get_channel(testch_id)
