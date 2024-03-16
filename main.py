@@ -154,8 +154,8 @@ async def login(ctx):
         
         description=
         f"**<@{ctx.author.id}>\n{today}\n今日のログインボーナスはこちら:bangbang::star2:\n"
-        f"## ＋<:savar:1218331362415870032>{add_sv}\n"
-        f"TOTAL ▶ <:savar:1218331362415870032>{now_sv}**\n\n"
+        f"## <:savar:1218331362415870032>{add_sv:,}\n"
+        f"TOTAL ▶ <:savar:1218331362415870032>{now_sv:,}**\n\n"
         ":sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle:\n"
         f"{bonus_txt}\n",
         color=0x00f230)
@@ -199,7 +199,7 @@ async def sv(ctx, *arg):
 
         sv = svRead(id)
         
-        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**<@{id}>\n所持savar:**\n# <:savar:1218331362415870032>{sv}", color=0x0074e1)
+        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**<@{id}>\n所持savar:**\n# <:savar:1218331362415870032>{sv:,}", color=0x0074e1)
         await ctx.send(embed=embed)
 
 
