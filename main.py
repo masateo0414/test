@@ -1,5 +1,6 @@
 import discord
 import os
+import re
 import random
 import pickle
 import datetime
@@ -47,6 +48,7 @@ client = discord.Client(intents=intents)
 global guild
 guild = client.get_guild(1133831716507754536)
 #MasateoのID
+global masateo_id
 masateo_id = 414755451419230208
 #本当のゲリ
 testch_id = 1150788907953299586
@@ -63,6 +65,10 @@ async def on_ready():
     await bot.tree.sync()
     loop.start()
 
+# お役立ちfunc
+
+def pickID(mention):
+    return re.search(r'\@(.+?)\>', mention).group(1)
 
 #!!call
 @bot.command()
@@ -117,10 +123,8 @@ async def dice(ctx,*arg):
 #!!login
 @bot.command()
 async def login(ctx):
-    #loginシートのA列を取得
     ws_login = workbook.worksheet("login")
     login_list = ws_login.col_values(1)
-    print(login_list)
 
     if str(ctx.author.id) in login_list and ctx.author.id != masateo_id:
         embed = discord.Embed(title=":gift:LOGIN BOUNS", description="**<@{}>\n今日のログインボーナスは取得済みです**".format(ctx.author.id), color=0x00f230)
@@ -140,13 +144,26 @@ async def login(ctx):
             bonus = "自分しか書き込めないテキストチャンネル"
             bonus_txt = "\n# {}".format(bonus)
         
+        # savarボーナス
+        sv_list = ws_login.col_values(3)
+        add_sv = int(random.choice(sv_list))
+        now_sv = svAdd(ctx.author.id, add_sv)
+        
         today = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%Y/%m/%d")
         embed = discord.Embed(title=":gift:LOGIN BOUNS", 
-        description="**<@{0}>\n{1}\n今日のログインボーナスはこちら:bangbang::star2:**\n:sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle:{2}".format(ctx.author.id, today, bonus_txt), color=0x00f230)
+        
+        description=
+        f"**<@{ctx.author.id}>\n{today}\n今日のログインボーナスはこちら:bangbang::star2:\n"
+        f"## ＋<:savar:1218331362415870032>{add_sv}\n"
+        f"TOTAL ▶ <:savar:1218331362415870032>{now_sv}**\n\n"
+        ":sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle::sparkle:\n"
+        f"{bonus_txt}\n",
+        color=0x00f230)
+
         if im_url != "":
             embed.set_image(url=im_url)
         await ctx.send(embed=embed) 
-        ws_login.update_cell(len(login_list)+1, 1, ctx.author.id)
+        ws_login.update_cell(len(login_list)+1, 1, str(ctx.author.id))
         ws_login.update_cell(len(login_list)+1, 2, ctx.author.name)
 
 #!!memory
@@ -163,6 +180,69 @@ async def memory(ctx,*arg):
         embed = discord.Embed(title=":memo:TEACH WORD", description=f":white_check_mark:真鯖botは以下の言葉をおぼえました\n## {arg[0]}", color=0x3d77ff)
         await ctx.send(embed=embed)
 
+#!!sv
+@bot.command()
+async def sv(ctx, *arg):
+    if len(arg) == 0:
+        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+        await ctx.send(embed=embed)
+
+    ws = workbook.worksheet("savar")
+
+    # show - 確認
+    if arg[0] == "show":
+        # デフォルトは自分の、指定がある場合はid抽出
+        if len(arg) == 1:
+            id = str(ctx.author.id)    
+        else:
+            id = pickID(arg[1])  
+
+        sv = svRead(id)
+        
+        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**<@{id}>\n所持savar:**\n# <:savar:1218331362415870032>{sv}", color=0x0074e1)
+        await ctx.send(embed=embed)
+
+
+# savar CRUDなど
+def svCreate(id):
+    ws = workbook.worksheet("savar")
+
+    user = bot.get_user(int(id))
+
+    list = ws.col_values(1)
+    ws.update_cell(len(list)+1, 1, str(id))
+    ws.update_cell(len(list)+1, 2, user.name)
+    ws.update_cell(len(list)+1, 3, 0)
+
+
+def svRead(id):
+    ws = workbook.worksheet("savar")
+
+    list = ws.col_values(1)
+    if str(id) in list:
+        sv = int(ws.cell(list.index(str(id))+1, 3,).value)
+    else:
+        svCreate(id)
+        sv = 0
+    
+    return sv
+
+def svAdd(id,add):
+    ws = workbook.worksheet("savar")
+
+    list = ws.col_values(1)
+
+    if not str(id) in list:
+        svCreate(id)
+        list = ws.col_values(1)
+    
+    add_row = list.index(str(id))+1
+    sv = int(ws.cell(add_row, 3,).value)
+    ws.update_cell(add_row, 3, sv+add)
+    return sv+add
+
+
+
 
 #!!login_listreset
 @bot.command()
@@ -172,13 +252,9 @@ async def login_listreset(ctx):
 
 #test~
 @bot.command()
-async def talktest(ctx):
-    ws_reply = workbook.worksheet("reply")
-    meisi_list = ws_reply.col_values(2)
-    randomRep_dic = ws_reply.col_values(3)
-    randomRep_dic2 = ws_reply.col_values(4)
-    reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
-    await ctx.send(reply)
+async def svTest(ctx,*arg):
+    svAdd(str(masateo_id), int(arg[0]))
+    await ctx.send( svRead(str(masateo_id)) )
 
 #test~
 @bot.command()
