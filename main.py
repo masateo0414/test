@@ -199,7 +199,7 @@ async def sv(ctx, *arg):
 
         sv = svRead(id)
         
-        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**<@{id}>\n所持savar:**\n# <:savar:1218331362415870032>{sv:,}", color=0x0074e1)
+        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**<@{id}>\n所持Savar:**\n# <:savar:1218331362415870032>{sv:,}", color=0x0074e1)
         await ctx.send(embed=embed)
 
 
@@ -272,6 +272,9 @@ async def talkToNormal(ctx):
 #返信機能
 @bot.event
 async def on_message(message):
+    if message.author == bot.user:
+        return
+    
     if bot.user in message.mentions:
         ws_reply = workbook.worksheet("reply")
 
@@ -332,7 +335,7 @@ async def loop():
     old_now = now
 
     # 突然喋る
-    if random.randrange(8000) == 0:
+    if random.randrange(20000) == 0:
         ws_reply = workbook.worksheet("reply")
         meisi_list = ws_reply.col_values(2)
         randomRep_dic = ws_reply.col_values(3)
