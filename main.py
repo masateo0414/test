@@ -205,14 +205,14 @@ async def sv(ctx, *arg):
     
     # give - 譲渡
     if arg[0] == "give":
-        if len(arg) != 4:
+        if len(arg) != 3:
             embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
             await ctx.send(embed=embed)
             return
         
-        fromID = pickID(arg[1])
-        toID = pickID(arg[2])
-        add = int(arg[3])
+        fromID = pickID(ctx.author.id)
+        toID = pickID(arg[1])
+        add = int(arg[2])
 
         if add < 1:
             embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**:x:譲渡する金額は1以上を指定してください**", color=0x0074e1)
