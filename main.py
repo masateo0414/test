@@ -186,6 +186,7 @@ async def sv(ctx, *arg):
     if len(arg) == 0:
         embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
         await ctx.send(embed=embed)
+        return
 
     ws = workbook.worksheet("savar")
 
@@ -201,6 +202,38 @@ async def sv(ctx, *arg):
         
         embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**<@{id}>\n所持Savar:**\n# <:savar:1218331362415870032>{sv:,}", color=0x0074e1)
         await ctx.send(embed=embed)
+    
+    # give - 譲渡
+    if arg[0] == "give":
+        if len(arg) != 4:
+            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+            await ctx.send(embed=embed)
+            return
+        
+        fromID = pickID(arg[1])
+        toID = pickID(arg[2])
+        add = int(arg[3])
+
+        if add < 1:
+            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**:x:譲渡する金額は1以上を指定してください**", color=0x0074e1)
+            await ctx.send(embed=embed)
+            return
+        elif svRead(fromID) < add:
+            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**:x:所持Savarを超える金額は譲渡できません**", color=0x0074e1)
+            await ctx.send(embed=embed)
+            return
+
+        from_sv = svAdd(fromID, add*(-1))
+        to_sv = svAdd(toID, add)
+
+        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=
+        f"**:white_check_mark:以下の通りSavarが移動しました:**\n\n"
+        f"from : **<@{fromID}>**\n"
+        f"<:savar:1218331362415870032>{from_sv + add} ▶ **<:savar:1218331362415870032>{from_sv}**\n"
+        f"## ⇓ <:savar:1218331362415870032>{add} ⇓\n"
+        f"to : **<@{toID}>**\n"
+        f"<:savar:1218331362415870032>{to_sv - add} ▶ **<:savar:1218331362415870032>{to_sv}**\n", color=0x0074e1)
+        await ctx.send(embed=embed)        
 
 
 # savar CRUDなど
