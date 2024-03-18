@@ -210,7 +210,7 @@ async def sv(ctx, *arg):
             await ctx.send(embed=embed)
             return
         
-        fromID = pickID(ctx.author.id)
+        fromID = ctx.author.id
         toID = pickID(arg[1])
         add = int(arg[2])
 
