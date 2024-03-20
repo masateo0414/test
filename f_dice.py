@@ -1,6 +1,6 @@
 import random
 
-numToEmoji = [["0",":zero:"],
+emoji_list = [["0",":zero:"],
             ["1",":one:"],
             ["2",":two:"],
             ["3",":three:"],
@@ -9,7 +9,8 @@ numToEmoji = [["0",":zero:"],
             ["6",":six:"],
             ["7",":seven:"],
             ["8",":eight:"],
-            ["9",":nine:"]]
+            ["9",":nine:"],
+            ["-",":no_entry:"]]
 
 def roll(mx):
     deme_list = []
@@ -25,8 +26,14 @@ def roll(mx):
         deme = random.randint(1,max)
         deme_list.append(deme)
 
-    res = str(sum(deme_list))
-    for j in range(10):
-        res = res.replace(numToEmoji[j][0],numToEmoji[j][1])
+#    res = str(sum(deme_list))
+#    for j in range(10):
+#        res = res.replace(numToEmoji[j][0],numToEmoji[j][1])
 
-    return "**{0}** →\n# {1}".format(deme_list, res)
+    return "**{0}** →\n# {1}".format(deme_list, numToEmoji(sum(deme_list)))
+
+def numToEmoji(num):
+    emoji = str(num)
+    for j in range(11):
+        emoji = emoji.replace(emoji_list[j][0],emoji_list[j][1])
+    return emoji

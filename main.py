@@ -65,7 +65,7 @@ async def on_ready():
     await bot.tree.sync()
     loop.start()
 
-# お役立ちfunc
+#^^v お役立ちfunc v^^
 
 def pickID(mention):
     return re.search(r'\@(.+?)\>', mention).group(1)
@@ -119,6 +119,30 @@ async def dice(ctx,*arg):
 
     embed = discord.Embed(title=":game_die:DICES( {} )".format(di_max), description=di_res, color=0xffcc00)
     await ctx.send(embed=embed)  
+
+#!!rand
+@bot.command()
+async def rand(ctx,*arg):
+    if len(arg) != 2:
+        embed = discord.Embed(title=":1234:RANDOM NUMBER GENERATER", description="**:x:生成する乱数を`!!rand (最小値) (最大値)`で指定してください**", color=0x00dfa5)
+        await ctx.send(embed=embed)
+        return
+    
+    min = int(arg[0])
+    max = int(arg[1])
+
+    if min > max:
+        embed = discord.Embed(title=":1234:RANDOM NUMBER GENERATER", description="**:x:最小値が最大値よりも大きいです**", color=0x00dfa5)
+        await ctx.send(embed=embed)        
+    
+    res = random.randint(min, max)
+    if len(str(res)) > 500:
+        embed = discord.Embed(title=":1234:RANDOM NUMBER GENERATER", description="**:x:デカすぎます**", color=0x00dfa5)
+        await ctx.send(embed=embed) 
+        
+    embed = discord.Embed(title=f":1234:RANDOM NUMBER GENERATER({min} - {max})", description=f"# {f_dice.numToEmoji(res)}", color=0x00dfa5)
+    await ctx.send(embed=embed)      
+
 
 #!!login
 @bot.command()
@@ -274,8 +298,122 @@ def svAdd(id,add):
     ws.update_cell(add_row, 3, sv+add)
     return sv+add
 
+#!!bomb
+@bot.command()
+async def bomb(ctx,arg):
+    ws = workbook.worksheet("bomb")
+    flag = ws.acell("A3").value
+
+    if arg == "newgame":
+        # 終わってなかったらerror
+        if flag != "end":
+            embed = discord.Embed(title=f":bomb:n BOMB GAME (ver.3)", description="**:x:まだ前の爆弾が解除されていません**", color=0x600000)
+            await ctx.send(embed=embed)
+            return            
+        moto = ws.col_values(3)
+        ws.update('B1',motoTrans(moto))
+        ws.update_acell("A3","play")
+        new_list = ws.col_values(2)
+        print(new_list)
+        embed = discord.Embed(title=f":bomb:{len(moto)} BOMB GAME (ver.3)", description=bombText(new_list), color=0x600000)
+        await ctx.send(embed=embed)
+        return
+
+    # そもそも爆破済みなら押せない
+    if flag == "end":
+        embed = discord.Embed(title=f":bomb:n BOMB GAME (ver.3)", description="**:x:爆発済、もしくは解除済です\n(`!!bomb newgame`で新しくゲームを開始できます)**", color=0x600000)
+        await ctx.send(embed=embed)
+        return       
+    try:
+        push_num = int(arg)
+    # このへん例外処理
+    except ValueError:
+        embed = discord.Embed(title=f":bomb:n BOMB GAME (ver.3)", description="**:x:存在しないボタンです**", color=0x600000)
+        await ctx.send(embed=embed)
+        return
+    now_list = ws.col_values(2)
+    if push_num > len(now_list) or push_num < 1:
+        embed = discord.Embed(title=f":bomb:n BOMB GAME (ver.3)", description="**:x:存在しないボタンです**", color=0x600000)
+        await ctx.send(embed=embed)  
+        return
+
+    # もう押されてたら
+    if not str(push_num) in now_list:
+        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)", description=f"**:x:({push_num})は既に押されています**", color=0x600000)
+        await ctx.send(embed=embed)
+        return
+    
+    # 1/nひいたか判定
+    nokori = int(ws.acell("A2").value)
+    if random.randrange(nokori) == 0:
+        outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:"
+        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=outtext, color=0x600000)
+        await ctx.send(embed=embed)
+        ws.update_acell("A3","end")
+        # 罰金
+        minus = 100 * (len(now_list) - nokori +1) * (-1)
+        now_sv = svAdd(ctx.author.id, minus)
+        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",
+            description=f"## <:savar:1218331362415870032>{minus*(-1)} LOST\n"
+            f"<:savar:1218331362415870032>{now_sv - minus} ▶ **<:savar:1218331362415870032>{now_sv}**", color=0x600000)
+        await ctx.send(embed=embed)
+        return
+
+    # セーフなら押した処理
+    ws.update_acell(f"B{push_num}", "x")
+    new_list = ws.col_values(2)
+    embed = discord.Embed(title=f":bomb:{len(new_list)} BOMB GAME (ver.3)", description=f"## ({push_num}) ▶ SAFE!\n{bombText(new_list)}", color=0x600000)
+    await ctx.send(embed=embed)
+    # ボタン2個だったならclaer
+    if nokori == 2:
+        cleartext = f"# :sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles:\n# ALL CLEARED!!!!\n# :sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles:\n**:warning:次の爆弾のボタンが1つ増えました({len(now_list)+1}個)**"
+        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=cleartext, color=0x600000)
+        await ctx.send(embed=embed)
+        # 賞金
+        plus = 1000 * len(now_list)
+        now_sv = svAdd(ctx.author.id, plus)
+        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",
+            description=
+            f"**<@{ctx.author.id}>**\n"
+            f"## <:savar:1218331362415870032>{plus} GET!\n"
+            f"<:savar:1218331362415870032>{now_sv - plus} ▶ **<:savar:1218331362415870032>{now_sv}**", color=0x600000)
+        await ctx.send(embed=embed)
+        ws.update_acell("A1", len(now_list)+1)
+        ws.update_acell("A3","end")
+        return
 
 
+
+# 雑転置
+def motoTrans(bef):
+    aft = []
+    for num in bef:
+        box = []
+        box.append(num)
+        aft.append(box)
+    return aft
+
+# 盤面テキスト生成
+def bombText(list):
+    blist = ""
+    btotal = len(list)
+    bcnt = 0
+
+    for i in range((btotal // 10)+1):
+        blist += ""
+        for j in range(1, 11):
+            bnum = 10*i + j
+            if bnum > btotal:
+                blist += ""
+            elif str(bnum) in list:
+                blist += f"({bnum})"
+                bcnt += 1
+            else:
+                blist += ":ballot_box_with_check:"
+        blist += "\n"
+
+    btxt = f"# 残り {bcnt} 個\n{blist}"
+    return btxt
 
 #!!login_listreset
 @bot.command()
