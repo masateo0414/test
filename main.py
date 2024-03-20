@@ -303,7 +303,7 @@ def svAdd(id,add):
 async def bomb(ctx,arg):
     # 競合を弾きたい
     log_list = [msg async for msg in ctx.channel.history(limit=2)]
-    if log_list[0].author == bot.user:
+    if log_list[1].content.startswith("!!bomb"):
         return
     
     ws = workbook.worksheet("bomb")
