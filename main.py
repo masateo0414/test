@@ -53,6 +53,10 @@ global masateo_id
 masateo_id = 414755451419230208
 #本当のゲリ
 testch_id = 1150788907953299586
+#地下労働施設
+global chika_id
+chika_id = 1220089357113888844
+
 #datebase
 global dbch_id 
 dbch_id = 1217820622755987566
@@ -306,6 +310,9 @@ async def bomb(ctx,arg):
     log_list = [msg async for msg in ctx.channel.history(limit=2)]
     if log_list[1].content.startswith("!!bomb"):
         await ctx.send("ﾏ")
+        return
+    # 地下ではNG
+    if ctx.channel.id == 1220089357113888844:
         return
     
     ws = workbook.worksheet("bomb")
