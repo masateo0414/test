@@ -304,6 +304,7 @@ async def bomb(ctx,arg):
     # 競合を弾きたい
     log_list = [msg async for msg in ctx.channel.history(limit=2)]
     if log_list[1].content.startswith("!!bomb"):
+        await ctx.send("ﾏ")
         return
     
     ws = workbook.worksheet("bomb")
@@ -356,7 +357,7 @@ async def bomb(ctx,arg):
         if nokori == 2:
             minus = 1000 * len(now_list) * (-1)
         else:
-            minus = 100 * (len(now_list) - nokori +1) * (-1)
+            minus = 50 * (len(now_list) - nokori +1) * (-1)
         # 徴収
         now_sv = svAdd(ctx.author.id, minus)
 
