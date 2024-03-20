@@ -360,7 +360,7 @@ async def bomb(ctx,arg):
     
     # 1/nひいたか判定
     nokori = int(ws.acell("A2").value)
-    if random.randrange(nokori) == -1:
+    if random.randrange(nokori) == 0:
         jackpot = int(ws.acell("A4").value)
         # 罰金決める
         if nokori == 2:
