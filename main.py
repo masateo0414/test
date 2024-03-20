@@ -253,10 +253,10 @@ async def sv(ctx, *arg):
         embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=
         f"**:white_check_mark:以下の通りSavarが移動しました:**\n\n"
         f"from : **<@{fromID}>**\n"
-        f"<:savar:1218331362415870032>{from_sv + add} ▶ **<:savar:1218331362415870032>{from_sv}**\n"
-        f"## ⇓ <:savar:1218331362415870032>{add} ⇓\n"
+        f"<:savar:1218331362415870032>{from_sv + add:,} ▶ **<:savar:1218331362415870032>{from_sv:,}**\n"
+        f"## ⇓ <:savar:1218331362415870032>{add:,} ⇓\n"
         f"to : **<@{toID}>**\n"
-        f"<:savar:1218331362415870032>{to_sv - add} ▶ **<:savar:1218331362415870032>{to_sv}**\n", color=0x0074e1)
+        f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n", color=0x0074e1)
         await ctx.send(embed=embed)        
 
 
@@ -346,20 +346,26 @@ async def bomb(ctx,arg):
     # 1/nひいたか判定
     nokori = int(ws.acell("A2").value)
     if random.randrange(nokori) == 0:
-        outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:"
-        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=outtext, color=0x600000)
-        await ctx.send(embed=embed)
-        ws.update_acell("A3","end")
-        # 罰金
+        jackpot = int(ws.acell("A4").value)
+        # 罰金決める
         if nokori == 2:
             minus = 1000 * len(now_list) * (-1)
         else:
-            minus = 100 * (len(now_list) - nokori +1) * (-1)
+            minus = 50 * (len(now_list) - nokori +1) * (-1)
+        # 徴収
         now_sv = svAdd(ctx.author.id, minus)
-        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",
-            description=f"## <:savar:1218331362415870032>{minus*(-1)} LOST\n"
-            f"<:savar:1218331362415870032>{now_sv - minus} ▶ **<:savar:1218331362415870032>{now_sv}**", color=0x600000)
+
+        outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n\n**JACKPOT : <:savar:1218331362415870032>{jackpot-minus:,}**"
+        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=outtext, color=0x600000)
         await ctx.send(embed=embed)
+
+        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",
+            description=f"## <:savar:1218331362415870032>{minus*(-1):,} LOST\n"
+            f"<:savar:1218331362415870032>{now_sv - minus:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**", color=0x600000)
+        await ctx.send(embed=embed)
+
+        ws.update_acell("A3","end")
+        ws.update_acell("A4", jackpot-minus)
         return
 
     # セーフなら押した処理
@@ -373,13 +379,18 @@ async def bomb(ctx,arg):
         embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=cleartext, color=0x600000)
         await ctx.send(embed=embed)
         # 賞金
-        plus = 1000 * len(now_list)
-        now_sv = svAdd(ctx.author.id, plus)
-        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",
-            description=
-            f"**<@{ctx.author.id}>**\n"
-            f"## <:savar:1218331362415870032>{plus} GET!\n"
-            f"<:savar:1218331362415870032>{now_sv - plus} ▶ **<:savar:1218331362415870032>{now_sv}**", color=0x600000)
+
+        if len(now_list) % 3 == 0:
+            plus = int(ws.acell("A4").value)
+            now_sv = svAdd(ctx.author.id, plus)
+            txt = f"**<@{ctx.author.id}>**\n# <:3000fever:1163376520975351818>JACKPOT<:3000fever:1163376520975351818>\n## <:savar:1218331362415870032>{plus:,} GET!!\n<:savar:1218331362415870032>{now_sv - plus:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
+            ws.update_acell("A4", 0)
+        else:
+            plus = 1000 * len(now_list)
+            now_sv = svAdd(ctx.author.id, plus)
+            txt = f"**<@{ctx.author.id}>**\n## <:savar:1218331362415870032>{plus:,} GET!\n<:savar:1218331362415870032>{now_sv - plus:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
+
+        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",description=txt, color=0x600000)
         await ctx.send(embed=embed)
         ws.update_acell("A1", len(now_list)+1)
         ws.update_acell("A3","end")
