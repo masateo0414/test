@@ -351,7 +351,10 @@ async def bomb(ctx,arg):
         await ctx.send(embed=embed)
         ws.update_acell("A3","end")
         # 罰金
-        minus = 100 * (len(now_list) - nokori +1) * (-1)
+        if nokori == 2:
+            minus = 1000 * len(now_list) * (-1)
+        else:
+            minus = 100 * (len(now_list) - nokori +1) * (-1)
         now_sv = svAdd(ctx.author.id, minus)
         embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",
             description=f"## <:savar:1218331362415870032>{minus*(-1)} LOST\n"
