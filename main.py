@@ -351,7 +351,7 @@ async def bomb(ctx,arg):
         if nokori == 2:
             minus = 1000 * len(now_list) * (-1)
         else:
-            minus = 50 * (len(now_list) - nokori +1) * (-1)
+            minus = 100 * (len(now_list) - nokori +1) * (-1)
         # 徴収
         now_sv = svAdd(ctx.author.id, minus)
 
