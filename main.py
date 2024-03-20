@@ -301,6 +301,11 @@ def svAdd(id,add):
 #!!bomb
 @bot.command()
 async def bomb(ctx,arg):
+    # 競合を弾きたい
+    log_list = [msg async for msg in ctx.channel.history(limit=2)]
+    if log_list[0].author == bot.user:
+        return
+    
     ws = workbook.worksheet("bomb")
     flag = ws.acell("A3").value
 
