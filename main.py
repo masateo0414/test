@@ -4,7 +4,8 @@ import re
 import random
 import pickle
 import datetime
-import gspread  
+import gspread
+import asyncio  
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands
 from discord.ext import tasks
@@ -319,6 +320,7 @@ async def bomb(ctx,arg):
         moto = ws.col_values(3)
         ws.update('B1',motoTrans(moto))
         ws.update_acell("A3","play")
+        ws.batch_clear(["E:E"])
         new_list = ws.col_values(2)
         print(new_list)
         embed = discord.Embed(title=f":bomb:{len(moto)} BOMB GAME (ver.3)", description=bombText(new_list), color=0x600000)
@@ -351,11 +353,11 @@ async def bomb(ctx,arg):
     
     # 1/nひいたか判定
     nokori = int(ws.acell("A2").value)
-    if random.randrange(nokori) == 0:
+    if random.randrange(nokori) == -1:
         jackpot = int(ws.acell("A4").value)
         # 罰金決める
         if nokori == 2:
-            minus = 1000 * len(now_list) * (-1)
+            minus = 500 * len(now_list) * (-1)
         else:
             minus = 50 * (len(now_list) - nokori +1) * (-1)
         # 徴収
@@ -376,6 +378,7 @@ async def bomb(ctx,arg):
 
     # セーフなら押した処理
     ws.update_acell(f"B{push_num}", "x")
+    ws.update_acell(f"E{len(now_list) - nokori +1}", str(ctx.author.id))
     new_list = ws.col_values(2)
     embed = discord.Embed(title=f":bomb:{len(new_list)} BOMB GAME (ver.3)", description=f"## ({push_num}) ▶ SAFE!\n{bombText(new_list)}", color=0x600000)
     await ctx.send(embed=embed)
@@ -384,24 +387,25 @@ async def bomb(ctx,arg):
         cleartext = f"# :sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles:\n# ALL CLEARED!!!!\n# :sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles:\n**:warning:次の爆弾のボタンが1つ増えました({len(now_list)+1}個)**"
         embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=cleartext, color=0x600000)
         await ctx.send(embed=embed)
-        # 賞金
 
+        # 賞金
         if len(now_list) % 3 == 0:
-            plus = int(ws.acell("A4").value)
-            now_sv = svAdd(ctx.author.id, plus)
-            txt = f"**<@{ctx.author.id}>**\n# <:3000fever:1163376520975351818>JACKPOT<:3000fever:1163376520975351818>\n## <:savar:1218331362415870032>{plus:,} GET!!\n<:savar:1218331362415870032>{now_sv - plus:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
+            jackpot = int(ws.acell("A4").value)
+            hero_log = ws.col_values(5)
+            hero_log.reverse()
+            txt = f"# <:3000fever:1163376520975351818>JACKPOT<:3000fever:1163376520975351818>\n" + jackpotGive(hero_log, jackpot)
             ws.update_acell("A4", 0)
         else:
-            plus = 1000 * len(now_list)
-            now_sv = svAdd(ctx.author.id, plus)
-            txt = f"**<@{ctx.author.id}>**\n## <:savar:1218331362415870032>{plus:,} GET!\n<:savar:1218331362415870032>{now_sv - plus:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
+            bonus = 1000 * len(now_list)
+            hero_log = ws.col_values(5)
+            hero_log.reverse()
+            txt = bonusGive(hero_log, bonus)            
 
         embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",description=txt, color=0x600000)
         await ctx.send(embed=embed)
         ws.update_acell("A1", len(now_list)+1)
         ws.update_acell("A3","end")
         return
-
 
 
 # 雑転置
@@ -434,6 +438,121 @@ def bombText(list):
 
     btxt = f"# 残り {bcnt} 個\n{blist}"
     return btxt
+
+# 賞金分配
+def bonusGive(log,bonus):
+    hero_list = list(set(log))
+    txt = f"# :scales:BONUS LIST\n"
+
+    for hero in hero_list:
+        gain = 0
+        for i in range(len(log)):
+            if log[i] == hero:
+                gain += round(bonus / (i+2))
+        now_sv = svAdd(hero, gain)
+        txt += f"## <@{hero}> <:savar:1218331362415870032>{gain:,} <:get:1179307754893082724>\n"\
+                f"<:savar:1218331362415870032>{now_sv - gain:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**\n\n"
+
+    return txt
+
+def jackpotGive(log,jackpot):
+    hero_list = list(set(log))
+    txt = f"# :scales:BONUS LIST\n"
+    pro_sum = 0
+    for n in range(2,len(log)+2):
+        pro_sum += 1/n
+
+    for hero in hero_list:
+        gain = 0
+        for i in range(len(log)):
+            if log[i] == hero:
+                gain += round(jackpot * 1/(i+2) / pro_sum)
+        now_sv = svAdd(hero, gain)
+        txt += f"## <@{hero}> <:savar:1218331362415870032>{gain:,} <:get:1179307754893082724>\n"\
+                f"<:savar:1218331362415870032>{now_sv - gain:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**\n\n"
+
+    return txt
+
+
+#!!work
+@bot.command()
+async def work(ctx):
+    # check用
+    def replyCheck(msg):
+        return msg.author == ctx.author and msg.content.isdigit()
+
+    if ctx.channel.id != 1220089357113888844 and ctx.author.id != masateo_id:
+        return
+    
+    # 問題生成
+    mode = random.randrange(4)
+    if mode == 0:
+        num1 = random.randint(1,999)
+        num2 = random.randint(1,999)
+        ans = num1 + num2
+        txt = f"{num1} + {num2} ="
+    
+    if mode == 1:
+        ans = random.randint(1,999)
+        num2 = random.randint(1,999)
+        num1 = num2 + ans
+        txt = f"{num1} - {num2} ="
+    
+    if mode == 2:
+        num1 = random.randint(2,99)
+        num2 = random.randint(2,99)
+        ans = num1 * num2
+        txt = f"{num1} × {num2} =" 
+
+    if mode == 3:
+        ans = random.randint(5,99)
+        num2 = random.randint(3,99)
+        num1 = num2 * ans
+        txt = f"{num1} ÷ {num2} ="  
+    
+    embed = discord.Embed(title=f":pick:WORK FOR MONEY",
+        description=f"<@{ctx.author.id}>\n# {txt} ？", color=0x000030)
+    await ctx.send(embed=embed)
+
+    try:
+        reply = await ctx.bot.wait_for(
+            'message', check=replyCheck, timeout=45
+        )   
+        if reply.content == str(ans):
+            embed = discord.Embed(title=f":pick:WORK FOR MONEY",
+                description=
+                f"<@{ctx.author.id}>\n# <:seikai:1164184120105107557> {txt} {ans}\n",
+                color=0x000030)
+            await ctx.send(embed=embed)
+
+            gain = random.randint(300,600)
+            now_sv = svAdd(ctx.author.id, gain)
+            embed = discord.Embed(title=f":pick:WORK FOR MONEY",
+                description=
+                f"## <:savar:1218331362415870032>{gain:,} 返済\n"
+                f"<:savar:1218331362415870032>{now_sv - gain:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
+                , color=0x000030)
+            await ctx.send(embed=embed)
+
+            # 返済完了なら解放
+            saimu_role = ctx.guild.get_role(1220102866501369917)
+            if now_sv > -1:
+                await ctx.author.remove_roles(saimu_role)
+                embed = discord.Embed(title=f":pick:WORK FOR MONEY",
+                    description=f"## <@{ctx.author.id}>\n# :sparkles::sparkles: 解 放 :sparkles::sparkles:", color=0x000030)
+                await ctx.send(embed=embed)                
+        else:
+            embed = discord.Embed(title=f":pick:WORK FOR MONEY",
+                description=f"<@{ctx.author.id}>\n## アホ\n# <:huseikai:1164186420483723305> {txt} {ans}", color=0x000030)
+            await ctx.send(embed=embed)
+    except asyncio.TimeoutError:
+        embed = discord.Embed(title=f":pick:WORK FOR MONEY",
+            description=f"<@{ctx.author.id}>\n## 遅い\n# {txt} {ans}", color=0x000030)
+        await ctx.send(embed=embed)
+
+
+
+
 
 #!!login_listreset
 @bot.command()
