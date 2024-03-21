@@ -364,9 +364,9 @@ async def bomb(ctx,arg):
         jackpot = int(ws.acell("A4").value)
         # 罰金決める
         if nokori == 2:
-            minus = 1000 * len(now_list) * (-1)
+            minus = 1500 * len(now_list) * (-1)
         else:
-            minus = 100 * (len(now_list) - nokori +1) * (-1)
+            minus = 150 * (len(now_list) - nokori +1) * (-1)
         # 徴収
         now_sv = svAdd(ctx.author.id, minus)
 
@@ -396,7 +396,7 @@ async def bomb(ctx,arg):
         await ctx.send(embed=embed)
 
         # 賞金
-        if len(now_list) % 3 == 0:
+        if len(now_list) % 5 == 0:
             jackpot = int(ws.acell("A4").value)
             hero_log = ws.col_values(5)
             hero_log.reverse()
@@ -406,9 +406,9 @@ async def bomb(ctx,arg):
             bonus = 1000 * len(now_list)
             hero_log = ws.col_values(5)
             hero_log.reverse()
-            txt = bonusGive(hero_log, bonus)            
+            txt = jackpotGive(hero_log, bonus)            
 
-        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",description=txt, color=0x600000)
+        embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",description=f"**1枚→1Savarと換金できるチケットを配布します**\n{txt}", color=0x600000)
         await ctx.send(embed=embed)
         ws.update_acell("A1", len(now_list)+1)
         ws.update_acell("A3","end")
@@ -474,9 +474,9 @@ def jackpotGive(log,jackpot):
         for i in range(len(log)):
             if log[i] == hero:
                 gain += round(jackpot * 1/(i+2) / pro_sum)
-        now_sv = svAdd(hero, gain)
-        txt += f"## <@{hero}> <:savar:1218331362415870032>{gain:,} <:get:1179307754893082724>\n"\
-                f"<:savar:1218331362415870032>{now_sv - gain:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**\n\n"
+        # now_sv = svAdd(hero, gain)
+        txt += f"## <@{hero}> :tickets:{gain:,} <:get:1179307754893082724>\n"\
+                # f"<:savar:1218331362415870032>{now_sv - gain:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**\n\n"
 
     return txt
 
