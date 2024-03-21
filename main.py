@@ -262,7 +262,30 @@ async def sv(ctx, *arg):
         f"## ⇓ <:savar:1218331362415870032>{add:,} ⇓\n"
         f"to : **<@{toID}>**\n"
         f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n", color=0x0074e1)
-        await ctx.send(embed=embed)        
+        await ctx.send(embed=embed)
+        return
+
+    # add - 追加
+    if arg[0] == "add":
+        if ctx.author.id != masateo_id:
+            return
+        
+        if len(arg) != 3:
+            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+            await ctx.send(embed=embed)
+            return
+        
+        toID = pickID(arg[1])
+        add = int(arg[2])
+        
+        to_sv = svAdd(toID, add)
+
+        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=
+        f"to : **<@{toID}>**\n"
+        f"## + <:savar:1218331362415870032>{add:,}\n"
+        f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n", color=0x0074e1)
+        await ctx.send(embed=embed)
+        return
 
 
 # savar CRUDなど
@@ -364,9 +387,9 @@ async def bomb(ctx,arg):
         jackpot = int(ws.acell("A4").value)
         # 罰金決める
         if nokori == 2:
-            minus = 1500 * len(now_list) * (-1)
+            minus = 1000 * len(now_list) * (-1)
         else:
-            minus = 150 * (len(now_list) - nokori +1) * (-1)
+            minus = 100 * (len(now_list) - nokori +1) * (-1)
         # 徴収
         now_sv = svAdd(ctx.author.id, minus)
 
@@ -396,14 +419,14 @@ async def bomb(ctx,arg):
         await ctx.send(embed=embed)
 
         # 賞金
-        if len(now_list) % 5 == 0:
+        if len(now_list) % 3 == 0:
             jackpot = int(ws.acell("A4").value)
             hero_log = ws.col_values(5)
             hero_log.reverse()
             txt = f"# <:3000fever:1163376520975351818>JACKPOT<:3000fever:1163376520975351818>\n" + jackpotGive(hero_log, jackpot)
-            ws.update_acell("A4", 0)
+            ws.update_acell("A4", 100000)
         else:
-            bonus = 2000 * len(now_list)
+            bonus = 5000 * len(now_list)
             hero_log = ws.col_values(5)
             hero_log.reverse()
             txt = jackpotGive(hero_log, bonus)            
