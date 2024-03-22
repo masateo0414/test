@@ -387,9 +387,9 @@ async def bomb(ctx,arg):
         jackpot = int(ws.acell("A4").value)
         # 罰金決める
         if nokori == 2:
-            minus = 1000 * len(now_list) * (-1)
+            minus = 1500 * len(now_list) * (-1)
         else:
-            minus = 100 * (len(now_list) - nokori +1) * (-1)
+            minus = 150 * (len(now_list) - nokori +1) * (-1)
         # 徴収
         now_sv = svAdd(ctx.author.id, minus)
 
