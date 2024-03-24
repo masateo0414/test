@@ -384,7 +384,7 @@ async def bomb(ctx,arg):
     # 1/nひいたか判定
     nokori = int(ws.acell("A2").value)
     if random.randrange(nokori) == 0:
-        jackpot = int(ws.acell("A4").value)
+        # jackpot = int(ws.acell("A4").value)
         # 罰金決める
         if nokori == 2:
             minus = 1500 * len(now_list) * (-1)
@@ -393,7 +393,8 @@ async def bomb(ctx,arg):
         # 徴収
         now_sv = svAdd(ctx.author.id, minus)
 
-        outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n\n**JACKPOT : <:savar:1218331362415870032>{jackpot-minus:,}**"
+        #outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n\n**JACKPOT : <:savar:1218331362415870032>{jackpot-minus:,}**"
+        outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:"
         embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=outtext, color=0x600000)
         await ctx.send(embed=embed)
 
@@ -403,7 +404,7 @@ async def bomb(ctx,arg):
         await ctx.send(embed=embed)
 
         ws.update_acell("A3","end")
-        ws.update_acell("A4", jackpot-minus)
+        # ws.update_acell("A4", jackpot-minus)
         return
 
     # セーフなら押した処理
@@ -419,14 +420,14 @@ async def bomb(ctx,arg):
         await ctx.send(embed=embed)
 
         # 賞金
-        if len(now_list) % 3 == 0:
+        if len(now_list) % 3 == -1:
             jackpot = int(ws.acell("A4").value)
             hero_log = ws.col_values(5)
             hero_log.reverse()
             txt = f"# <:3000fever:1163376520975351818>JACKPOT<:3000fever:1163376520975351818>\n" + jackpotGive(hero_log, jackpot)
             ws.update_acell("A4", 100000)
         else:
-            bonus = 5000 * len(now_list)
+            bonus = 2500 * len(now_list)
             hero_log = ws.col_values(5)
             hero_log.reverse()
             txt = jackpotGive(hero_log, bonus)            
