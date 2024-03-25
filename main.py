@@ -556,7 +556,7 @@ async def work(ctx):
                 color=0x000030)
             await ctx.send(embed=embed)
 
-            gain = random.randint(300,600)
+            gain = random.randint(100,400)
             now_sv = svAdd(ctx.author.id, gain)
             embed = discord.Embed(title=f":pick:WORK FOR MONEY",
                 description=
