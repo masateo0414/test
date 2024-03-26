@@ -427,7 +427,7 @@ async def bomb(ctx,arg):
             txt = f"# <:3000fever:1163376520975351818>JACKPOT<:3000fever:1163376520975351818>\n" + jackpotGive(hero_log, jackpot)
             ws.update_acell("A4", 100000)
         else:
-            bonus = 2500 * len(now_list)
+            bonus = 4000 * len(now_list)
             hero_log = ws.col_values(5)
             hero_log.reverse()
             txt = jackpotGive(hero_log, bonus)            
