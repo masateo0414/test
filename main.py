@@ -75,6 +75,18 @@ async def on_ready():
 def pickID(mention):
     return re.search(r'\@(.+?)\>', mention).group(1)
 
+def addJosu(age):
+    if age == 11 or age == 12 or age == 13:
+        return f"{age}th"
+    elif age % 10 == 1:
+        return f"{age}st"
+    elif age % 10 == 2:
+        return f"{age}nd"
+    elif age % 10 == 3:
+        return f"{age}rd"
+    else:
+        return f"{age}th"
+
 #!!call
 @bot.command()
 async def call(ctx):
@@ -395,7 +407,7 @@ async def bomb(ctx,arg):
 
         #outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n\n**JACKPOT : <:savar:1218331362415870032>{jackpot-minus:,}**"
         outtext = f"## ({push_num}) ▶ OUT!\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:\n# <@{ctx.author.id}> <:si:1133966404001996881>:bangbang::bangbang::bangbang:\n# :boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom::boom:"
-        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=outtext, color=0x600000)
+        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.3)", description=outtext, color=0x600000)
         await ctx.send(embed=embed)
 
         embed = discord.Embed(title=f":bomb:{len(now_list)} BOMB GAME (ver.3)",
@@ -416,7 +428,7 @@ async def bomb(ctx,arg):
     # ボタン2個だったならclaer
     if nokori == 2:
         cleartext = f"# :sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles:\n# ALL CLEARED!!!!\n# :sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles::sparkles:\n**:warning:次の爆弾のボタンが1つ増えました({len(now_list)+1}個)**"
-        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.2)", description=cleartext, color=0x600000)
+        embed = discord.Embed(title=f":boom:{len(now_list)} BOMB GAME (ver.3)", description=cleartext, color=0x600000)
         await ctx.send(embed=embed)
 
         # 賞金
@@ -662,15 +674,48 @@ async def on_command_error(ctx, error):
 async def loop():
     global old_now,testch_id
     #print("loop")
-    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%H:%M")
+    dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    now = dt_now.strftime("%H:%M")
     channel = bot.get_channel(testch_id)
+    normal = bot.get_channel(1133837604991811665) #ノーマル雑談
     #await channel.send(now)
 
-    # 00:00 - login reset
+    # 00:00 events
     if old_now != now and now == "00:00":
+    # if True:
+
+        # login reset
         await channel.send("login reset")
         worksheet = workbook.worksheet("login")
         worksheet.batch_clear(["A:B"])
+
+        # birthday
+        today = dt_now.strftime("%m%d")
+        print(today)
+        toyear = dt_now.year
+        ws_birth = workbook.worksheet("birth")
+        birthday_list = ws_birth.col_values(3)
+
+        for i in range(len(birthday_list)):
+            if today == birthday_list[i][-4:]:
+                birth_userid = ws_birth.cell(i+1,1).value
+                birth_year = birthday_list[i][:4]
+                todate = dt_now.strftime("%Y/%m/%d")
+
+                if birth_year == "0000":
+                    embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
+                    description=
+                    f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY BIRTHDAY!!:tada:",
+                    color=0xff6000)
+                else:
+                    age = toyear - int(birth_year)
+                    embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
+                    description=
+                    f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY {addJosu(age)} BIRTHDAY!!:tada:",
+                    color=0xff6000)
+                
+                await normal.send(embed=embed)
+
     
     # 現在時刻更新
     old_now = now
@@ -683,9 +728,8 @@ async def loop():
         randomRep_dic2 = ws_reply.col_values(4)
         reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
 
-        channel = bot.get_channel(1133837604991811665) #ノーマル雑談
         # channel = bot.get_channel(testch_id)
-        await channel.send(reply)
+        await normal.send(reply)
 
 
 TOKEN = os.getenv("DISCORD_TOKEN")
