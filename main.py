@@ -647,7 +647,7 @@ async def on_message(message):
 
 # 適当発言生成
 def randomSpeak(ws):
-    if random.randrange(5) < 2:
+    if random.randrange(6) < 2:
         aiduti_list = ws.col_values(1)
         reply = aiduti_list[random.randrange(len(aiduti_list))]
     else:
