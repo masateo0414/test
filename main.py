@@ -676,6 +676,7 @@ async def loop():
     #print("loop")
     dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     now = dt_now.strftime("%H:%M")
+    todate = dt_now.strftime("%Y/%m/%d")
     channel = bot.get_channel(testch_id)
     normal = bot.get_channel(1133837604991811665) #ノーマル雑談
     #await channel.send(now)
@@ -685,7 +686,7 @@ async def loop():
     # if True:
 
         # login reset
-        await channel.send("login reset")
+        await channel.send(f"{todate}こうしんおっけー！")
         worksheet = workbook.worksheet("login")
         worksheet.batch_clear(["A:B"])
 
@@ -700,7 +701,6 @@ async def loop():
             if today == birthday_list[i][-4:]:
                 birth_userid = ws_birth.cell(i+1,1).value
                 birth_year = birthday_list[i][:4]
-                todate = dt_now.strftime("%Y/%m/%d")
 
                 if birth_year == "0000":
                     embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
