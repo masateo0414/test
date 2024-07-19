@@ -303,6 +303,13 @@ bonus_list = ["50円",
               "ひらめき系の謎案",
               "A K Q J 10が無いトランプ",
               "ねこ～",
+              "スーモ",
+              "餃子の羽",
+              "3DSソフトの説明書",
+              "毒ログインボーナス",
+              "氷",
+              "骸",
+              "チンポ",
 
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152314872659451924/image0.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152469863802081350/shopping2.jpg",
@@ -333,7 +340,10 @@ bonus_list = ["50円",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1169998898455121920/images_3.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1177794487238524948/51WAwdL4ofL._AC_UF8941000_QL80_.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1178219801877950514/IMG_1607.png",
-              "https://cdn.discordapp.com/attachments/1152178864404049920/1179449807081853010/20231123_002058.jpg"]
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1179449807081853010/20231123_002058.jpg",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1235101167038496788/5080323-01.jpg",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1235894106031652904/AE4544EB-6156-4D88-8E18-F1FD691A4CFF.jpg",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1243909292286021693/main.png"]
               
 
 def getBonus():
