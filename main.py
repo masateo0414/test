@@ -344,7 +344,7 @@ async def bomb(ctx,arg):
     # 競合を弾きたい
     log_list = [msg async for msg in ctx.channel.history(limit=2)]
     if log_list[1].content.startswith("!!bomb"):
-        await ctx.send("ﾏ")
+        await ctx.send("ﾏ-")
         return
     # 地下ではNG
     if ctx.channel.id == 1220089357113888844:
