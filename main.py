@@ -120,7 +120,7 @@ async def coin(ctx):
 async def dice(ctx,*arg):
     if len(arg) > 0:
         di_max = arg[0]
-        di_res = f_dice.roll(di_max)
+        di_res = func.convCustomEmoji(f_dice.roll(di_max))
 
     if len(arg) == 0:
         di_max = "2d6"
@@ -130,7 +130,7 @@ async def dice(ctx,*arg):
         di_max = "KUSODEKA"
         di_res = "# デカすぎます"
 
-    if len(di_res) > 5000:
+    if len(di_res) > 4096:
         di_max = "KUSODEKA"
         di_res = "# デカすぎます"
 

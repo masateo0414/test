@@ -12,6 +12,13 @@ emoji_list = [["0",":zero:"],
             ["9",":nine:"],
             ["-",":no_entry:"]]
 
+dice_list = [["1",":dice_1:"],
+            ["2",":dice_2:"],
+            ["3",":dice_3:"],
+            ["4",":dice_4:"],
+            ["5",":dice_5:"],
+            ["6",":dice_6:"]]
+
 def roll(mx):
     deme_list = []
     try:
@@ -30,10 +37,19 @@ def roll(mx):
 #    for j in range(10):
 #        res = res.replace(numToEmoji[j][0],numToEmoji[j][1])
 
-    return "**{0}** →\n# {1}".format(deme_list, numToEmoji(sum(deme_list)))
+    if max == 6:
+        return f"{numsToDices(deme_list)} →\n# {numToEmoji(sum(deme_list))}"
+    else:
+        return "**{0}** →\n# {1}".format(deme_list, numToEmoji(sum(deme_list)))
 
 def numToEmoji(num):
     emoji = str(num)
     for j in range(11):
         emoji = emoji.replace(emoji_list[j][0],emoji_list[j][1])
     return emoji
+
+def numsToDices(nums):
+    dices = "#"
+    for j in range(len(nums)):
+        dices += f" :dice_{nums[j]}:"
+    return dices
