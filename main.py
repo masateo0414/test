@@ -691,8 +691,10 @@ async def on_message(message):
             else:
                 embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=
                 f"## :x:ゲーマータグが登録されていません\n"
-                f"**`!!sv tag (ゲーマータグ)`でゲーマータグを登録してください**", color=0x0074e1)
+                f"**・`!!sv tag (ゲーマータグ)`でゲーマータグを登録してください**\n"
+                f"**・Switch勢の方は、ゲーマータグではなくアカウント名で登録するとうまくいくと思います**", color=0x0074e1)
                 await message.channel.send(embed=embed)
+                await message.channel.send(f"変換が正しく行われませんでした")
                 await message.channel.send(f"/scoreboard players add {tag} minepoint {amount}")
 
     
