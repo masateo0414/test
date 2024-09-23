@@ -315,8 +315,9 @@ async def sv(ctx, *arg):
         if tag in tag_list:
             tag_id = ws_tag.cell((tag_list.index(tag))+1, 2,).value
             embed = discord.Embed(title=":memo:GAMER TAG RESISTRATION", description=
-            f"**:warning:\"{tag}\" はすでに <@{tag_id}> によって登録されています**", color=0x0074e1)
-            await ctx.send(embed=embed)   
+            f"**:warning:\"{tag}\" はすでに <@{tag_id}> によって登録されています**\n"
+            f"(そんなわけない場合は、Masateoに連絡してください)", color=0x0074e1)
+            await ctx.send(embed=embed)
             return     
         
         ws_tag.update_cell(len(tag_list)+1, 1, tag)
@@ -684,7 +685,7 @@ async def on_message(message):
                 embed = discord.Embed(title=f"<:savar:1218331362415870032>SAVAR BANK",
                 description=
                 f"## {amount:,} MinePointを <:savar:1218331362415870032>{amount:,} に変換しました\n"
-                f"<:savar:1218331362415870032>{now_sv - amount:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
+                f"<@{tag_id}> <:savar:1218331362415870032>{now_sv - amount:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
                 , color=0x0074e1)
                 await message.channel.send(embed=embed)
             else:
