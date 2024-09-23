@@ -696,6 +696,7 @@ async def on_message(message):
                 await message.channel.send(embed=embed)
                 await message.channel.send(f"変換が正しく行われませんでした")
                 await message.channel.send(f"/scoreboard players add {tag} minepoint {amount}")
+                await message.channel.send(f"/scoreboard players add {tag} change_minepoint {amount}")
 
     
     #フレームワーク移行のための
