@@ -298,7 +298,34 @@ async def sv(ctx, *arg):
         f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n", color=0x0074e1)
         await ctx.send(embed=embed)
         return
+    
+    # tag - ゲマタグ追加
+    if arg[0] == "tag":
+        if len(arg) != 2:
+            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+            await ctx.send(embed=embed)
+            return
+        
+        tag = arg[1]
+        userID = str(ctx.author.id)
 
+        ws_tag = workbook.worksheet("tag")
+        tag_list = ws_tag.col_values(1)
+
+        if tag in tag_list:
+            tag_id = ws_tag.cell((tag_list.index(tag))+1, 2,).value
+            embed = discord.Embed(title=":memo:GAMER TAG RESISTRATION", description=
+            f"**:warning:\"{tag}\" はすでに <@{tag_id}> によって登録されています**", color=0x0074e1)
+            await ctx.send(embed=embed)   
+            return     
+        
+        ws_tag.update_cell(len(tag_list)+1, 1, tag)
+        ws_tag.update_cell(len(tag_list)+1, 2, userID)
+
+        embed = discord.Embed(title=":memo:GAMER TAG RESISTRATION", description=
+        f":white_check_mark:ゲーマータグを登録しました:\n"
+        f"## <@{userID}> : {tag}", color=0x0074e1)
+        await ctx.send(embed=embed)
 
 # savar CRUDなど
 def svCreate(id):
@@ -640,6 +667,33 @@ async def on_message(message):
 
         #送信！
         await message.reply(reply)
+    
+    # ServerBot -> MasabaBotの連携
+    if message.author.id == 1287447200611176500:
+        if message.content.startswith("[change]"):
+            change_list = message.content.replace("[change] ","").split(",")
+            tag = change_list[0]
+            amount = int(change_list[1])
+
+            ws_tag = workbook.worksheet("tag")
+            tag_list = ws_tag.col_values(1)
+
+            if tag in tag_list:
+                tag_id = ws_tag.cell((tag_list.index(tag))+1, 2,).value
+                now_sv = svAdd(tag_id, amount)
+                embed = discord.Embed(title=f"<:savar:1218331362415870032>SAVAR BANK",
+                description=
+                f"## {amount:,} MinePointを <:savar:1218331362415870032>{amount:,} に変換しました\n"
+                f"<:savar:1218331362415870032>{now_sv - amount:,} ▶ **<:savar:1218331362415870032>{now_sv:,}**"
+                , color=0x0074e1)
+                await message.channel.send(embed=embed)
+            else:
+                embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=
+                f"## :x:ゲーマータグが登録されていません\n"
+                f"**`!!sv tag (ゲーマータグ)`でゲーマータグを登録してください**", color=0x0074e1)
+                await message.channel.send(embed=embed)
+                await message.channel.send(f"/scoreboard players add {tag} minepoint {amount}")
+
     
     #フレームワーク移行のための
     await bot.process_commands(message)
