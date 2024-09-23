@@ -686,7 +686,7 @@ async def loop():
     # if True:
 
         # login reset
-        await channel.send(f"{todate}こうしんおっけー！")
+        await channel.send(f"{todate}こうしんおっけー！！")
         worksheet = workbook.worksheet("login")
         worksheet.batch_clear(["A:B"])
 
