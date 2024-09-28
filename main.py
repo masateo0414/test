@@ -392,7 +392,6 @@ async def bomb(ctx,arg):
         ws.update_acell("A3","play")
         ws.batch_clear(["E:E"])
         new_list = ws.col_values(2)
-        print(new_list)
         embed = discord.Embed(title=f":bomb:{len(moto)} BOMB GAME (ver.3)", description=bombText(new_list), color=0x600000)
         await ctx.send(embed=embed)
         return
@@ -622,8 +621,233 @@ async def work(ctx):
         await ctx.send(embed=embed)
 
 
+#!!dojo
+@bot.command()
+async def dojo(ctx):
+
+    ws_dojo = workbook.worksheet("dojo")
+
+    yaku_list = ["ヒフミ","目無し","1の目","2の目","3の目","4の目","5の目","6の目",
+                "シゴロ","6のアラシ","5のアラシ","4のアラシ","3のアラシ","2のアラシ","ピンゾロ"]
+    rank_list = ["カス","素人","一般人","四段","五段","六段","七段","八段",
+                "名人初段","名人二段","名人三段","名人四段","名人五段","名人六段","名人七段","名人八段",
+                "超人初段","超人二段","超人三段","超人四段","超人五段","超人六段","超人七段","超人八段",
+                "達人初段","達人二段","達人三段","達人四段","達人五段","達人六段","達人七段","達人八段",
+                "神"]
+    border = 3
+    d_res = ""
+
+    # セーブデータ読み込み
+    id_list = ws_dojo.col_values(1)
+    if str(ctx.author.id) in id_list:
+        lineind = id_list.index(str(ctx.author.id))+1
+
+        level = int(ws_dojo.cell(lineind, 3,).value)
+        border = level % 8
+        if border == 0 : border = 8
+        maxlife = 7 - (level - border) / 4
+        life = int(ws_dojo.cell(lineind, 4,).value)
+    else:
+        lineind = len(id_list)+1
+
+        await rankUpdate(f"<@{ctx.author.id}>", "【一般人】")
+        ws_dojo.update_cell(lineind, 1, str(ctx.author.id))
+        ws_dojo.update_cell(lineind, 2, ctx.author.name)
+        ws_dojo.update_cell(lineind, 3, 3)
+        ws_dojo.update_cell(lineind, 4, 7)
+
+        level = 3
+        border = 3
+        maxlife = 7
+        life = 7
+    
+    rank = rank_list[level-1]
+    if level == 1:
+        rank = "カス"
+    if level == 2:
+        rank = "素人"
+    if level == 3:
+        rank = "一般人"
+    
+    # ふるよー
+    a = random.randint(1,6)
+    d_res += f":dice_{a}: "
+    b = random.randint(2,6)
+    d_res += f":dice_{b}: "
+    c = random.randint(3,6)
+    d_res += f":dice_{c}:"
 
 
+    d_list = (a,b,c)
+    d_res = func.convCustomEmoji(d_res)
+
+
+    # 出目判定
+    if a!=b!=c and a+b+c == 6:
+        result = -1
+    elif d_list.count(1) == 2:
+        result = a+b+c -2
+    elif d_list.count(2) == 2:
+        result = a+b+c -4
+    elif d_list.count(3) == 2:
+        result = a+b+c -6
+    elif d_list.count(4) == 2:
+        result = a+b+c -8
+    elif d_list.count(5) == 2:
+        result = a+b+c -10
+    elif d_list.count(6) == 2:
+        result = a+b+c -12
+    elif a!=b!=c and a+b+c == 15:
+        result = 7
+    elif a==b==c:
+        result = 7 -a +7
+    else:
+        result = 0
+
+    # 成否処理
+    # ピンゾロ
+    if result == 13:
+        syohai = f":arrow_heading_up::arrow_heading_up:{rank_list[level+1]} 飛び級昇格!!!"
+        now_life = life
+        yaku = f"{yaku_list[result+1]}　▶　<:deka:1134020757983330304><:kati:1155023087172067360>"
+
+        await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level+1]}】")
+        ws_dojo.update_cell(lineind, 3, level+2)
+
+        if border == 6:
+            ws_dojo.update_cell(lineind, 4, maxlife+5)
+        elif border > 6:
+            ws_dojo.update_cell(lineind, 4, maxlife-2)
+        else:
+            ws_dojo.update_cell(lineind, 4, maxlife)
+    # 123
+    elif result == -1:
+        syohai = "<:si:1133966404001996881>:bangbang:"
+        now_life = 0
+        yaku = f"{yaku_list[result+1]}　▶　<:deka:1134020757983330304><:make:1155023139416326205>"
+    # 通常勝ち
+    elif result >= border:
+        syohai = f":arrow_heading_up:{rank_list[level]} 昇格!!"
+        now_life = life
+        yaku = f"{yaku_list[result+1]}　▶　<:kati:1155023087172067360>"
+
+        await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level]}】")
+        ws_dojo.update_cell(lineind, 3, level+1)
+
+        if border == 7:
+            ws_dojo.update_cell(lineind, 4, maxlife+5)
+        elif border == 8:
+            ws_dojo.update_cell(lineind, 4, maxlife-2)
+        else:
+            ws_dojo.update_cell(lineind, 4, maxlife)
+    # 通常負け
+    else:
+        syohai = "MISS..."
+        now_life = life -1
+        yaku = f"{yaku_list[result+1]}　▶　<:make:1155023139416326205>"
+
+        ws_dojo.update_cell(lineind, 4, now_life)
+
+
+    yaku_border = yaku_list[border+1]
+
+    embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
+                    description=f"### {rank} <@{ctx.author.id}>\n"
+                                f"{rank_list[level]} 昇格条件: **{yaku_border}** 以上\n"
+                                f"――――――――――――――――――――――――\n"
+                                f"# {d_res}\n"
+                                f"## {yaku}\n"
+                                f"# {syohai}\n"
+                                f"**:heart: x {now_life}**",
+                        color=0xee3700)
+    await ctx.send(embed=embed) 
+
+    # 降格処理
+    if now_life == 0:
+        if level == 1:
+            ws_dojo.update_cell(lineind, 4, 7)            
+
+            embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
+                        description=f"## <@{ctx.author.id}> 本当にカス\n"
+                                    f"**ライフリセット！いい加減にしろ**",
+                            color=0x880000)
+            await ctx.send(embed=embed) 
+        else:
+            await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-2]}】")
+            ws_dojo.update_cell(lineind, 3, level-1)
+            if border == 1:
+                ws_dojo.update_cell(lineind, 4, maxlife+7)
+            else:
+                ws_dojo.update_cell(lineind, 4, maxlife)
+            
+            embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
+                        description=f"# :arrow_heading_down:降格:anger:\n"
+                                    f"## <@{ctx.author.id}> {rank_list[level-2]}\n"
+                                    f"**ライフリセット！再挑戦しよう**",
+                            color=0x880000)
+            await ctx.send(embed=embed) 
+
+# 段位表更新
+async def rankUpdate(user, rank):
+    rank_dic = [["神","a"],
+                ["超人八段","b"],
+                ["超人七段","c"],
+                ["超人六段","d"],
+                ["超人五段","e"],
+                ["超人四段","f"],
+                ["超人三段","g"],
+                ["超人二段","h"],
+                ["超人初段","i"],
+                ["名人八段","j"],
+                ["名人七段","k"],
+                ["名人六段","l"],
+                ["名人五段","m"],
+                ["名人四段","n"],
+                ["名人三段","o"],
+                ["名人二段","p"],
+                ["名人初段","q"],
+                ["八段","r"],
+                ["七段","s"],
+                ["六段","t"],
+                ["五段","u"],
+                ["四段","v"],
+                ["一般人","w"],
+                ["素人","x"],
+                ["カス","y"]]
+    
+    channel = bot.get_channel(1289170232782622751) #段位表
+    messages = [message async for message in channel.history(limit=1)]
+    rank_mes = messages[-1]
+    rank_lists = rank_mes.content.replace("**","").split("\n")
+    rank_list = []
+    for i in range(len(rank_lists)):
+        rank_set = rank_lists[i].split(" ")
+        rank_list.append(rank_set)
+
+    # あったら更新、なければ追加
+    flag = 0
+    for i in range(len(rank_list)):
+        if user == rank_list[i][1]:
+            rank_list[i][0] = rank
+            flag = 1
+    if flag == 0:
+        rank_list.append([rank,user])
+        
+    # まわりくどソート
+    for j in range(len(rank_list)):
+        for k in range(len(rank_dic)):
+            rank_list[j][0] = rank_list[j][0].replace(rank_dic[k][0],rank_dic[k][1])
+    rank_list.sort()
+    for j in range(len(rank_list)):
+        for k in range(len(rank_dic)):
+            rank_list[j][0] = rank_list[j][0].replace(rank_dic[k][1],rank_dic[k][0])
+    
+    # txtにもどす
+    new_mes = ""
+    for set in rank_list:
+        new_mes += f"**{set[0]} {set[1]}**\n"
+    new_mes = new_mes[:-1]
+    await rank_mes.edit(new_mes)
 
 #!!login_listreset
 @bot.command()
@@ -633,9 +857,20 @@ async def login_listreset(ctx):
 
 #test~
 @bot.command()
-async def svTest(ctx,*arg):
-    svAdd(str(masateo_id), int(arg[0]))
-    await ctx.send( svRead(str(masateo_id)) )
+async def dbTest(ctx):
+    channel = bot.get_channel(1289170232782622751) #datebase
+    embed = discord.Embed(title=":hut:CHINCHIRO DOJO: RANK LIST", 
+            description=f"**【五段】 <@159985870458322944>**\n"
+                        f"**【四段】 <@235148962103951360>**\n"
+                        f"**【一般人】 <@414755451419230208>**",
+                color=0xee3700)
+    await channel.send(f"**【一般人】 <@414755451419230208>**") 
+
+@bot.command()
+async def dbTest2(ctx,*arg):
+    await rankUpdate(arg[0],arg[1])
+
+
 
 #test~
 @bot.command()
