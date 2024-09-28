@@ -705,8 +705,16 @@ async def dojo(ctx):
 
     # 成否処理
     rankupStar = [3,3,3,3,2,2,1,1]
+    # ションベン
+    if random.randrange(1,200) == 1:
+        rankup = -1
+
+        d_res = ":basket: :white_small_square::white_small_square::white_small_square:"
+        yaku = f"ションベン　▶　<:aho:1168437457969229824>"
+        syohai = f"<:ikunai:1134046737338732624>:bangbang:"
+        now_life = life
     # ピンゾロ
-    if result == 13:
+    elif result == 13:
         syohai = f":star2: 即飛び級昇格!!!!"
         now_life = life
         yaku = f"{yaku_list[result+1]}　▶　<:kami:1161339802340298793><:kati:1155023087172067360>"
@@ -831,6 +839,28 @@ async def dojo(ctx):
                                 f"**ライフリセット！**",
                         color=0xff3300)
         await ctx.send(embed=embed) 
+    elif rankup == -1:
+        if level == 1:
+            ws_dojo.update_cell(lineind, 4, 7)            
+
+            embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
+                        description=f"## <@{ctx.author.id}> 本当にカス\n"
+                                    f"**ライフリセット！いい加減にしろ**",
+                            color=0x880000)
+            await ctx.send(embed=embed) 
+        else:
+            await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-2]}】")
+            if border == 1:
+                ws_dojo.update([[level-1, 0, maxlife+2]],f"C{lineind}:E{lineind}")
+            else:
+                ws_dojo.update([[level-1, 0, maxlife]],f"C{lineind}:E{lineind}")
+            
+            embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
+                        description=f"# :arrow_heading_down:降格:anger:\n"
+                                    f"## <@{ctx.author.id}> {rank_list[level-1]} ▶ {rank_list[level-2]}\n"
+                                    f"**ライフリセット！再挑戦しよう**",
+                            color=0x880000)
+            await ctx.send(embed=embed) 
 
 # 段位表更新
 async def rankUpdate(user, rank):
