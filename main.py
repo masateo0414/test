@@ -892,6 +892,7 @@ async def rankUpdate(user, rank):
     for set in rank_list:
         new_mes += f"**{set[0]} {set[1]}**\n"
     new_mes = new_mes[:-1]
+    print(new_mes)
     await rank_mes.edit(new_mes)
 
 #!!login_listreset
