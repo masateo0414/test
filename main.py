@@ -625,6 +625,12 @@ async def work(ctx):
 @bot.command()
 async def dojo(ctx):
 
+    forDojoCh = [1289226276443521034, 1150788907953299586]
+    if ctx.channel.id not in forDojoCh:
+        embed = discord.Embed(title=":x:ERROR", description="# このチャンネルでは使えません", color=0xff0000)
+        await ctx.send(embed=embed)
+        return
+
     ws_dojo = workbook.worksheet("dojo")
 
     yaku_list = ["ヒフミ","目無し","1の目","2の目","3の目","4の目","5の目","6の目",
