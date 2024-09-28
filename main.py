@@ -706,6 +706,7 @@ async def dojo(ctx):
         yaku = f"{yaku_list[result+1]}　▶　<:kami:1161339802340298793><:kati:1155023087172067360>"
 
         rankup = 2
+        print("rankUp2")
     # アラシ
     elif result >= 8 and result <= 12:
         syohai = f":star2: 即昇格!!!"
@@ -713,6 +714,7 @@ async def dojo(ctx):
         yaku = f"{yaku_list[result+1]}　▶　<:deka:1134020757983330304><:kati:1155023087172067360>"
 
         rankup = 1
+        print("rankUp")
     # 123
     elif result == -1:
         syohai = "<:si:1133966404001996881>:bangbang:"
@@ -727,6 +729,7 @@ async def dojo(ctx):
 
         if star == rankupStar[border-1]:
             rankup = 1
+            print("rankUp")
         else:
             ws_dojo.update([[star, maxlife]],f"D{lineind}:E{lineind}")
             await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-1]}{"★"*star}】")
@@ -745,7 +748,7 @@ async def dojo(ctx):
                     description=f"### {rank} <@{ctx.author.id}>\n"
                                 f"{rank_list[level]} 昇格条件: **★ {rankupStar[border-1]}つ**\n"
                                 f"★獲得条件: **{yaku_border}** 以上\n"
-                                f"――――――――――――――――――――――――\n"
+                                f"―――――――――――――――――\n"
                                 f"# {d_res}\n"
                                 f"## {yaku}\n"
                                 f"# {syohai}\n"
