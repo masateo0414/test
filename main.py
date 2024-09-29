@@ -682,7 +682,7 @@ async def dojo(ctx):
 
 
     # 出目判定
-    if a!=b!=c and a+b+c == 6:
+    if a!=b and b!=c and c!=a and a+b+c == 6:
         result = -1
     elif d_list.count(1) == 2:
         result = a+b+c -2
@@ -696,7 +696,7 @@ async def dojo(ctx):
         result = a+b+c -10
     elif d_list.count(6) == 2:
         result = a+b+c -12
-    elif a!=b!=c and a+b+c == 15:
+    elif a!=b and b!=c and c!=a and a+b+c == 15:
         result = 7
     elif a==b==c:
         result = 7 -a +7
