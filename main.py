@@ -124,7 +124,7 @@ async def dice(ctx,*arg):
 
     if len(arg) == 0:
         di_max = "2d6"
-        di_res = f_dice.roll(di_max)
+        di_res = func.convCustomEmoji(f_dice.roll(di_max))
 
     if len(di_max) > 200:
         di_max = "KUSODEKA"
@@ -771,7 +771,7 @@ async def dojo(ctx):
     await ctx.send(embed=embed) 
 
     # 降格処理
-    if now_life == 0:
+    if now_life <= 0:
         star -= 1
 
         # ★0なら
@@ -973,12 +973,13 @@ async def talkToNormal(ctx):
 
 
 
-#返信機能
+#特定のメッセージに反応する
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
     
+    # 1 : しゃべる
     if bot.user in message.mentions:
         ws_reply = workbook.worksheet("reply")
 
@@ -992,7 +993,7 @@ async def on_message(message):
         #送信！
         await message.reply(reply)
     
-    # ServerBot -> MasabaBotの連携
+    # 2 : ServerBot -> MasabaBotの連携
     if message.author.id == 1287447200611176500:
         if message.content.startswith("[change]"):
             change_list = message.content.replace("[change] ","").split(",")
@@ -1021,6 +1022,12 @@ async def on_message(message):
                 await message.channel.send(f"/scoreboard players add {tag} minepoint {amount}")
                 await message.channel.send(f"/scoreboard players add {tag} change_minepoint {amount}")
 
+
+    # 3 : ちんこ検知
+    chinkoes = ["ちんこ","chinko","tinko","チンコ","ﾁﾝｺ","ちんぽ","chimpo","chinpo","tinpo","チンポ","ﾁﾝﾁﾝ","ちんちん","chinchin","tintin","チンチン","ﾁﾝﾁﾝ","珍棒","珍珍","ちんぼう","チンボウ","ぽこちん","pokochin","pokotin","ポコチン","ﾎﾟｺﾁﾝ","肉棒","陰茎","ぺにす","ペニス","ﾍﾟﾆｽ","まら","マラ","ﾏﾗ","魔羅","penis","てぃんてぃん","ティンティン","ティムポ","ちーんこ","チーンコ"]
+    if message.content.lower() in chinkoes or any(s in message.content.lower() for s in chinkoes):
+        chinkoEmoji = "<:chinko:1134001412695674891>"
+        await message.add_reaction(chinkoEmoji)
     
     #フレームワーク移行のための
     await bot.process_commands(message)
@@ -1037,6 +1044,11 @@ def randomSpeak(ws):
         randomRep_dic2 = ws.col_values(4)
         reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
     return reply
+
+
+
+
+
 
 # -------------------------------------------------------------------------------------------
 # error syori
