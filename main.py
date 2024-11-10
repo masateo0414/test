@@ -87,12 +87,12 @@ def addJosu(age):
     else:
         return f"{age}th"
 
-#!!call
+# // MARK: call
 @bot.command()
 async def call(ctx):
     await ctx.send("マ！")
 
-#!!shout
+# // MARK: shout
 @bot.command()
 async def shout(ctx,*arg):
     quiz = f_shout.normal()
@@ -104,7 +104,7 @@ async def shout(ctx,*arg):
 
     await ctx.send(embed=discord.Embed(title=":boom:SPRINT SHOUT", description="**【○に文字を入れて言葉を完成させよ】**\n# {}".format(quiz), color=sh_col))
 
-#!!coin
+# // MARK: coin
 @bot.command()
 async def coin(ctx):
     if random.randint(1,2) == 1:
@@ -115,7 +115,7 @@ async def coin(ctx):
     embed = discord.Embed(title=":coin:COIN TOSS", description="# {}".format(coin_deme), color=0xffcc00)
     await ctx.send(embed=embed)
 
-#!!dice
+# // MARK: dice
 @bot.command()
 async def dice(ctx,*arg):
     if len(arg) > 0:
@@ -134,10 +134,10 @@ async def dice(ctx,*arg):
         di_max = "KUSODEKA"
         di_res = "# デカすぎます"
 
-    embed = discord.Embed(title=":game_die:DICES( {} )".format(di_max), description=di_res, color=0xffcc00)
+    embed = discord.Embed(title=":game_die:DICES( {} )".format(di_max), description=f"**<@{ctx.author.id}>\n{di_res}", color=0xffcc00)
     await ctx.send(embed=embed)  
 
-#!!rand
+# // MARK: rand
 @bot.command()
 async def rand(ctx,*arg):
     if len(arg) != 2:
@@ -161,7 +161,7 @@ async def rand(ctx,*arg):
     await ctx.send(embed=embed)      
 
 
-#!!login
+# // MARK: login
 @bot.command()
 async def login(ctx):
     ws_login = workbook.worksheet("login")
@@ -207,7 +207,7 @@ async def login(ctx):
         ws_login.update_cell(len(login_list)+1, 1, str(ctx.author.id))
         ws_login.update_cell(len(login_list)+1, 2, ctx.author.name)
 
-#!!memory
+# // MARK: memory
 @bot.command()
 async def memory(ctx,*arg):
     if len(arg) != 1:
@@ -221,7 +221,7 @@ async def memory(ctx,*arg):
         embed = discord.Embed(title=":memo:TEACH WORD", description=f":white_check_mark:真鯖botは以下の言葉をおぼえました\n## {arg[0]}", color=0x3d77ff)
         await ctx.send(embed=embed)
 
-#!!sv
+# // MARK: sv
 @bot.command()
 async def sv(ctx, *arg):
     if len(arg) == 0:
@@ -366,7 +366,7 @@ def svAdd(id,add):
     ws.update_cell(add_row, 3, sv+add)
     return sv+add
 
-#!!bomb
+# // MARK: bomb
 @bot.command()
 async def bomb(ctx,arg):
     # 競合を弾きたい
@@ -544,7 +544,7 @@ def jackpotGive(log,jackpot):
     return txt
 
 
-#!!work
+# // MARK: work
 @bot.command()
 async def work(ctx):
     # check用
@@ -621,7 +621,7 @@ async def work(ctx):
         await ctx.send(embed=embed)
 
 
-#!!dojo
+# // MARK: dojo
 @bot.command()
 async def dojo(ctx):
 
@@ -924,6 +924,7 @@ async def rankUpdate(user, rank):
     new_mes = new_mes[:-1]
     await rank_mes.edit(content=new_mes)
 
+# // MARK: test
 #!!login_listreset
 @bot.command()
 async def login_listreset(ctx):
@@ -973,6 +974,7 @@ async def talkToNormal(ctx):
 
 
 
+# // MARK: on_message
 #特定のメッセージに反応する
 @bot.event
 async def on_message(message):
@@ -1051,7 +1053,7 @@ def randomSpeak(ws):
 
 
 # -------------------------------------------------------------------------------------------
-# error syori
+# // MARK: on_command_error
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
@@ -1062,6 +1064,7 @@ async def on_command_error(ctx, error):
 
 
 
+# // MARK: loop
 #ログインリセット用ループ処理
 @tasks.loop(seconds=10)
 async def loop():
