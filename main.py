@@ -134,7 +134,7 @@ async def dice(ctx,*arg):
         di_max = "KUSODEKA"
         di_res = "# デカすぎます"
 
-    embed = discord.Embed(title=":game_die:DICES( {} )".format(di_max), description=f"**<@{ctx.author.id}>\n{di_res}", color=0xffcc00)
+    embed = discord.Embed(title=":game_die:DICES( {} )".format(di_max), description=f"**<@{ctx.author.id}>**\n{di_res}", color=0xffcc00)
     await ctx.send(embed=embed)  
 
 # // MARK: rand
