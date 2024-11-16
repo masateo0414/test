@@ -706,7 +706,7 @@ async def dojo(ctx):
     # 成否処理
     rankupStar = [3,3,3,3,2,2,1,1]
     # ションベン
-    if random.randrange(1,200) == 1:
+    if random.randrange(1,500) == 1:
         rankup = -1
 
         d_res = ":basket: :white_small_square::white_small_square::white_small_square:"
