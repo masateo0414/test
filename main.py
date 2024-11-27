@@ -652,7 +652,7 @@ async def dojo(ctx):
         level = int(ws_dojo.cell(lineind, 3,).value)
         border = level % 8
         if border == 0 : border = 8
-        maxlife = 7 - (level - border) / 4
+        maxlife = int(7 - (level - border) / 4)
         star = int(ws_dojo.cell(lineind, 4,).value)
         life = int(ws_dojo.cell(lineind, 5,).value)
     else:
@@ -766,7 +766,7 @@ async def dojo(ctx):
                                 f"# {d_res}\n"
                                 f"## {yaku}\n"
                                 f"# {syohai}\n"
-                                f"**:heart: x {now_life}**",
+                                f"{":heart:"*now_life}{":black_heart:"*(maxlife-now_life)}",
                         color=0xee3700)
     await ctx.send(embed=embed) 
 
