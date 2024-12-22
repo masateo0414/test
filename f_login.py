@@ -221,7 +221,6 @@ bonus_list = ["50円",
               "ちょっとだけ入りやすいヘソ釘",
               "アレルギー 全完治",
               "トローチ(喉飴)",
-              "自分ともう二人 ほかの誰かと誰かしか書き込めないテキストチャンネル",
               "第三四分位数",
               "い〜い耳栓",
               "叙々苑 一回無料券",
@@ -323,6 +322,7 @@ bonus_list = ["50円",
               "アインシュタインの歯",
               "イナズマKすけ単独ライブ 無料観覧券",
               "創英角ポップ体",
+              "パジェロ",
 
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152314872659451924/image0.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152469863802081350/shopping2.jpg",
@@ -360,7 +360,8 @@ bonus_list = ["50円",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1271214232481824789/51JZ0A4Vy4L.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1274587861684981812/GU7yCQ0a4AMQu77.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1295330064623341568/09713_l.jpg",
-              "https://cdn.discordapp.com/attachments/1152178864404049920/1302131244217405502/60981498_p0_square1200.jpg"]
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1302131244217405502/60981498_p0_square1200.jpg",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1311893177006952528/IMG_1876.png"]
               
 
 def getBonus():
