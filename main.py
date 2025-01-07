@@ -73,7 +73,10 @@ async def on_ready():
 #^^v お役立ちfunc v^^
 
 def pickID(mention):
-    return re.search(r'\@(.+?)\>', mention).group(1)
+    if "@" in  mention:
+        return re.search(r'\@(.+?)\>', mention).group(1)
+    else:
+        return mention
 
 def addJosu(age):
     if age == 11 or age == 12 or age == 13:
@@ -91,6 +94,11 @@ def addJosu(age):
 @bot.command()
 async def call(ctx):
     await ctx.send("マ！")
+
+# // MARK: help
+@bot.command()
+async def send_bot_help(self):
+    await self.get_destination().send("https://discord.com/channels/1133831716507754536/1217748515288121426")
 
 # // MARK: shout
 @bot.command()
@@ -941,12 +949,12 @@ async def dbTest(ctx):
                         f"**【一般人】 <@414755451419230208>**",
                 color=0xee3700)
     await channel.send(f"**【名人二段】 <@610826378971185152>**\n"
-                       f"**【七段】 <@1001800888001773588>**\n"
-                       f"**【六段★】 <@836563535722446850>**\n"
-                       f"**【四段★★】 <@778974168410226708>**\n"
-                       f"**【四段★】 <@699110927957622804>**\n"
-                       f"**【四段】 <@398044353207205892>**\n"
-                       f"**【一般人★★】 <@515090484889255938>**\n")
+                        f"**【七段】 <@1001800888001773588>**\n"
+                        f"**【六段★】 <@836563535722446850>**\n"
+                        f"**【四段★★】 <@778974168410226708>**\n"
+                        f"**【四段★】 <@699110927957622804>**\n"
+                        f"**【四段】 <@398044353207205892>**\n"
+                        f"**【一般人★★】 <@515090484889255938>**\n")
 
 @bot.command()
 async def dbTest2(ctx,*arg):
@@ -1053,6 +1061,12 @@ def randomSpeak(ws):
 
 
 # -------------------------------------------------------------------------------------------
+
+# // MARK: sh-error
+@bot.command()
+async def sh(ctx):
+    await ctx.send("たぶん、ビックリマークがいっこ多いぞ")
+
 # // MARK: on_command_error
 @bot.event
 async def on_command_error(ctx, error):
