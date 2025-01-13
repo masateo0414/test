@@ -666,7 +666,7 @@ async def dojo(ctx):
     else:
         lineind = len(id_list)+1
 
-        await rankUpdate(f"<@{ctx.author.id}>", "【一般人】")
+        #await rankUpdate(f"<@{ctx.author.id}>", "【一般人】")
         ws_dojo.update([[str(ctx.author.id), ctx.author.name, 3, 0, 7]],f"A{lineind}:E{lineind}")
 
         level = 3
@@ -754,7 +754,7 @@ async def dojo(ctx):
             print("rankUp")
         else:
             ws_dojo.update([[star, maxlife]],f"D{lineind}:E{lineind}")
-            await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-1]}{"★"*star}】")
+            #await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-1]}{"★"*star}】")
     # 通常負け
     else:
         syohai = "MISS..."
@@ -793,7 +793,7 @@ async def dojo(ctx):
                                 color=0x880000)
                 await ctx.send(embed=embed) 
             else:
-                await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-2]}】")
+                #await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-2]}】")
                 if border == 1:
                     ws_dojo.update([[level-1, 0, maxlife+2]],f"C{lineind}:E{lineind}")
                 else:
@@ -807,7 +807,7 @@ async def dojo(ctx):
                 await ctx.send(embed=embed) 
         # ★があるなら
         else:
-            await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-1]}{"★"*star}】")
+            #await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-1]}{"★"*star}】")
             ws_dojo.update([[star, maxlife]],f"D{lineind}:E{lineind}")
 
             embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
@@ -825,7 +825,7 @@ async def dojo(ctx):
         else:
             ws_dojo.update([[level+1, 0, maxlife]],f"C{lineind}:E{lineind}")
         
-        await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level]}】")
+        #await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level]}】")
 
         embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
                     description=f"# :arrow_heading_up:昇格!!\n"
@@ -839,7 +839,7 @@ async def dojo(ctx):
         else:
             ws_dojo.update([[level+2, 0, maxlife]],f"C{lineind}:E{lineind}")
         
-        await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level+1]}】")
+        #await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level+1]}】")
 
         embed = discord.Embed(title=":hut:CHINCHIRO DOJO", 
                     description=f"# :arrow_heading_up::arrow_heading_up:飛び級昇格!!\n"
@@ -857,7 +857,7 @@ async def dojo(ctx):
                             color=0x880000)
             await ctx.send(embed=embed) 
         else:
-            await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-2]}】")
+            #await rankUpdate(f"<@{ctx.author.id}>", f"【{rank_list[level-2]}】")
             if border == 1:
                 ws_dojo.update([[level-1, 0, maxlife+2]],f"C{lineind}:E{lineind}")
             else:
@@ -931,6 +931,8 @@ async def rankUpdate(user, rank):
         new_mes += f"**{set[0]} {set[1]}**\n"
     new_mes = new_mes[:-1]
     await rank_mes.edit(content=new_mes)
+
+
 
 # // MARK: test
 #!!login_listreset
