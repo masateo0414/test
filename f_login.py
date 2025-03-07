@@ -323,6 +323,10 @@ bonus_list = ["50円",
               "イナズマKすけ単独ライブ 無料観覧券",
               "創英角ポップ体",
               "パジェロ",
+              "ヒｨッッッザァァァ！！！！",
+              "水素",
+              "知らん人のサイン会チケット",
+              "自分しか書き込めないテキストチャンネル",
 
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152314872659451924/image0.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152469863802081350/shopping2.jpg",
@@ -361,7 +365,9 @@ bonus_list = ["50円",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1274587861684981812/GU7yCQ0a4AMQu77.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1295330064623341568/09713_l.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1302131244217405502/60981498_p0_square1200.jpg",
-              "https://cdn.discordapp.com/attachments/1152178864404049920/1311893177006952528/IMG_1876.png"]
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1311893177006952528/IMG_1876.png",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1326607951988916234/IMG_4671.jpg",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1340243074248605696/GjuleeCbgAAq0ui.jpg"]
               
 
 def getBonus():

@@ -188,7 +188,7 @@ async def login(ctx):
         else:
             bonus_txt = "\n# {}".format(bonus)
 
-        give = 1022459654418202660
+        give = -1
         if ctx.author.id == give:
             bonus = "自分しか書き込めないテキストチャンネル"
             bonus_txt = "\n# {}".format(bonus)
