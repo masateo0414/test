@@ -1036,7 +1036,15 @@ async def on_message(message):
 
 
     # 3 : ちんこ検知
-    chinkoes = ["ちんこ","chinko","tinko","チンコ","ﾁﾝｺ","ちんぽ","chimpo","chinpo","tinpo","チンポ","ﾁﾝﾁﾝ","ちんちん","chinchin","tintin","チンチン","ﾁﾝﾁﾝ","珍棒","珍珍","ちんぼう","チンボウ","ぽこちん","pokochin","pokotin","ポコチン","ﾎﾟｺﾁﾝ","肉棒","陰茎","ぺにす","ペニス","ﾍﾟﾆｽ","まら","マラ","ﾏﾗ","魔羅","penis","てぃんてぃん","ティンティン","ティムポ","ちーんこ","チーンコ"]
+    chinkoes = ["ちんこ","chinko","tinko","チンコ","ﾁﾝｺ",
+                "ちんぽ","chimpo","chinpo","tinpo","チンポ",
+                "ﾁﾝﾁﾝ","ちんちん","chinchin","tintin","チンチン","ﾁﾝﾁﾝ",
+                "珍棒","珍珍","ちんぼう","チンボウ",
+                "ぽこちん","pokochin","pokotin","ポコチン","ﾎﾟｺﾁﾝ",
+                "肉棒","陰茎","ぺにす","ペニス","ﾍﾟﾆｽ",
+                "まら","マラ","ﾏﾗ","魔羅","penis",
+                "てぃんてぃん","ティンティン","ティムポ","ちーんこ","チーンコ",
+                "男根","いちもつ","イチモツ","ｲﾁﾓﾂ","ファルス"]
     if message.content.lower() in chinkoes or any(s in message.content.lower() for s in chinkoes):
         chinkoEmoji = "<:chinko:1134001412695674891>"
         await message.add_reaction(chinkoEmoji)
