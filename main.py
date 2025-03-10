@@ -15,6 +15,7 @@ import f_shout
 import f_dice
 import f_login
 import f_reply
+import f_sniper
 
 load_dotenv()
 
@@ -111,6 +112,21 @@ async def shout(ctx,*arg):
         sh_col = discord.Colour.red()
 
     await ctx.send(embed=discord.Embed(title=":boom:SPRINT SHOUT", description="**【○に文字を入れて言葉を完成させよ】**\n# {}".format(quiz), color=sh_col))
+
+# // MARK: sniper
+@bot.command()
+async def sniper(ctx):
+    letter = f_sniper.getLetter()
+    odai = f_sniper.getOdai()
+
+    embed = discord.Embed(title=":gun:WORD SNIPER",
+                        description=f"# 「{letter[0]}」\n"
+                                    f"**から始まる**\n"
+                                    f"# 「{odai}」\n"
+                                    f"**といえば？( {letter[1]} pt )**",
+                        color=0xffa500)
+    
+    await ctx.send(embed=embed)
 
 # // MARK: coin
 @bot.command()
