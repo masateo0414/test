@@ -53,7 +53,7 @@ guild = client.get_guild(1133831716507754536)
 global masateo_id
 masateo_id = 414755451419230208
 #本当のゲリ
-testch_id = 1150788907953299586
+ch_test_id = 1150788907953299586
 #地下労働施設
 global chika_id
 chika_id = 1220089357113888844
@@ -985,6 +985,13 @@ async def dbTest2(ctx,*arg):
     #await channel.send(embed=embed)
     
 
+#@bot.command()
+#async def dbTest3(ctx):
+#    ch_test = bot.get_channel(ch_test_id)
+#
+#    embed = embed_3ch()
+#    await ch_test.send(embed=embed)
+
 
 
 #test~
@@ -1022,7 +1029,7 @@ async def on_message(message):
         await message.reply(reply)
     
     # 2 : ServerBot -> MasabaBotの連携
-    if message.author.id == 1287447200611176500:
+    if message.author.id == 1287447200611176500: #MasabaServerBotのID
         if message.content.startswith("[change]"):
             change_list = message.content.replace("[change] ","").split(",")
             tag = change_list[0]
@@ -1064,6 +1071,15 @@ async def on_message(message):
     if message.content.lower() in chinkoes or any(s in message.content.lower() for s in chinkoes):
         chinkoEmoji = "<:chinko:1134001412695674891>"
         await message.add_reaction(chinkoEmoji)
+    
+    # 4 : 3日チャンネル案追加
+    if message.channel.id == 1329405973588086826: # の、案　のID
+        if message.content.startswith("【") and message.content.endswith("】"):
+            an = message.content.strip("【】")
+            ws_3ch = workbook.worksheet("3ch")
+            an_list = ws_3ch.col_values(1)
+
+            ws_3ch.update_cell(len(an_list)+1, 1, an)
     
     #フレームワーク移行のための
     await bot.process_commands(message)
@@ -1108,13 +1124,14 @@ async def on_command_error(ctx, error):
 #ログインリセット用ループ処理
 @tasks.loop(seconds=10)
 async def loop():
-    global old_now,testch_id
+    global old_now,ch_test_id
     #print("loop")
     dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     now = dt_now.strftime("%H:%M")
     todate = dt_now.strftime("%Y/%m/%d")
-    channel = bot.get_channel(testch_id)
-    normal = bot.get_channel(1133837604991811665) #ノーマル雑談
+    ch_test = bot.get_channel(ch_test_id)
+    ch_normal = bot.get_channel(1133837604991811665) #ノーマル雑談
+    ch_an = bot.get_channel(1329405973588086826) #の、案
     #await channel.send(now)
 
     # 00:00 events
@@ -1122,7 +1139,7 @@ async def loop():
     # if True:
 
         # login reset
-        await channel.send(f"{todate}こうしんおっけー！！")
+        await ch_test.send(f"{todate}こうしんおっけー！！")
         worksheet = workbook.worksheet("login")
         worksheet.batch_clear(["A:B"])
 
@@ -1150,7 +1167,13 @@ async def loop():
                     f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY {addJosu(age)} BIRTHDAY!!:tada:",
                     color=0xff6000)
                 
-                await normal.send(embed=embed)
+                await ch_normal.send(embed=embed)
+        
+        # 3days chat
+        if random.randrange(100) <= 70:
+            embed = embed_3ch()
+            await ch_an.send(embed=embed)
+
 
     
     # 現在時刻更新
@@ -1164,9 +1187,22 @@ async def loop():
         randomRep_dic2 = ws_reply.col_values(4)
         reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
 
-        # channel = bot.get_channel(testch_id)
-        await normal.send(reply)
+        # channel = bot.get_channel(ch_test)
+        await ch_normal.send(reply)
 
+def embed_3ch():
+    ws_3ch = workbook.worksheet("3ch")
+    an_list = ws_3ch.col_values(1)
+    backNo = ws_3ch.acell("B1").value
+    title = random.choice(an_list)
+
+    embed = discord.Embed(title=f":three:3 DAYS TEXT CHANNEL",
+    description=f"# \#{backNo}『{title}』",
+    color=0x1e90ff)
+
+    ws_3ch.update_acell("B1", int(backNo)+1)
+
+    return embed
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
