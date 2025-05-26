@@ -985,12 +985,12 @@ async def dbTest2(ctx,*arg):
     #await channel.send(embed=embed)
     
 
-#@bot.command()
-#async def dbTest3(ctx):
-#    ch_test = bot.get_channel(ch_test_id)
-#
-#    embed = embed_3ch()
-#    await ch_test.send(embed=embed)
+@bot.command()
+async def dbTest3(ctx):
+    ch_test = bot.get_channel(1329405973588086826)
+
+    embed = embed_3ch()
+    await ch_test.send(embed=embed)
 
 
 
@@ -1060,7 +1060,11 @@ async def on_message(message):
 
     # 3 : ちんこ検知
     chinkoes = ["ちんこ","chinko","tinko","チンコ","ﾁﾝｺ",
+                "ちーんこ","チーンコ","ﾁｰﾝｺ","ちんーこ","チンーコ","ﾁﾝｰｺ",
+                "ち～んこ","チ～ンコ",
                 "ちんぽ","chimpo","chinpo","tinpo","チンポ",
+                "ちーんぽ","チーンポ","ﾁｰﾝﾎﾟ","ちんーぽ","チンーポ","ﾁﾝｰﾎﾟ",
+                "ちん～ぽ","チン～ポ",
                 "ﾁﾝﾁﾝ","ちんちん","chinchin","tintin","チンチン","ﾁﾝﾁﾝ",
                 "珍棒","珍珍","ちんぼう","チンボウ",
                 "ぽこちん","pokochin","pokotin","ポコチン","ﾎﾟｺﾁﾝ",
@@ -1170,7 +1174,7 @@ async def loop():
                 await ch_normal.send(embed=embed)
         
         # 3days chat
-        if random.randrange(100) <= 70:
+        if random.randrange(100) <= 50:
             embed = embed_3ch()
             await ch_an.send(embed=embed)
 
@@ -1190,6 +1194,7 @@ async def loop():
         # channel = bot.get_channel(ch_test)
         await ch_normal.send(reply)
 
+# 3日チャンネル抽選用
 def embed_3ch():
     ws_3ch = workbook.worksheet("3ch")
     an_list = ws_3ch.col_values(1)
