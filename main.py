@@ -299,6 +299,10 @@ async def sv(ctx, *arg):
         f"to : **<@{toID}>**\n"
         f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n", color=0x0074e1)
         await ctx.send(embed=embed)
+
+
+        if int(toID) == 1371392422390665236: #行き先がsumikaBotなら、両替コマンドを送信
+            await ctx.send(f"--hc exchange {fromID} {add}")
         return
 
     # add - 追加
