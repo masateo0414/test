@@ -43,12 +43,22 @@ workbook = gc.open_by_key(SPREADSHEET_KEY)
 bot = commands.Bot(command_prefix="!!", intents=discord.Intents.all())
 
 intents = discord.Intents.default()
+intents.message_content = True
+intents.messages = True
+intents.guilds = True
 intents.members = True
 client = discord.Client(intents=intents)
+
+
+# Botを通すやつ
+@bot.check
+async def global_allow_bots(ctx):
+    return True  # 全てのメッセージを許可（Botも含む）
 
 #真鯖のguild(未解決)
 global guild
 guild = client.get_guild(1133831716507754536)
+
 #MasateoのID
 global masateo_id
 masateo_id = 414755451419230208
@@ -1015,7 +1025,19 @@ async def talkToNormal(ctx):
 #特定のメッセージに反応する
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
+    # print(f"on_message受信: {message.content} [from {message.author}, bot={message.author.bot}]")
+    
+    # 外様IDたち
+    sumika_id = 1371392422390665236
+    masabasaba_id = 1287447200611176500
+    ALLOWED_BOT_IDS = [sumika_id, masabasaba_id]
+
+    # 自分の発言は無視
+    if message.author.id == bot.user.id:
+        return
+    # Botだったとき、そのBotは許可対象でないなら無視
+    if message.author.bot and message.author.id not in ALLOWED_BOT_IDS:
+        print(f"❌ 許可されてないBotのメッセージなのでスキップ: {message.author}")
         return
     
     # 1 : しゃべる
@@ -1089,8 +1111,14 @@ async def on_message(message):
 
             ws_3ch.update_cell(len(an_list)+1, 1, an)
     
-    #フレームワーク移行のための
-    await bot.process_commands(message)
+    # await bot.process_commands(message)
+
+    # ↑これいったんナシで　以下、ctxから無理やり実行するやつ
+    ctx = await bot.get_context(message)
+    
+    if ctx.valid:
+        # print(f"[ctx.valid] コマンド: {ctx.command} 実行者: {ctx.author}")
+        await bot.invoke(ctx)
 
 
 # 適当発言生成
@@ -1105,7 +1133,10 @@ def randomSpeak(ws):
         reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
     return reply
 
-
+# コマンド呼び出し確認用
+@bot.event
+async def on_command(ctx):
+    print(f"[on_command] 実行されたコマンド: {ctx.command}, by: {ctx.author} [bot={ctx.author.bot}]")
 
 
 
@@ -1120,6 +1151,7 @@ async def sh(ctx):
 # // MARK: on_command_error
 @bot.event
 async def on_command_error(ctx, error):
+    print(f"[ERROR] コマンドエラー: {error}")
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         embed = discord.Embed(title=":question:UNKNOWN COMMAND", description="# そんなコマンドはない", color=0xff0000)
         await ctx.send(embed=embed)
