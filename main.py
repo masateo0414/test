@@ -1210,7 +1210,7 @@ async def loop():
                 await ch_normal.send(embed=embed)
         
         # 3days chat
-        if random.randrange(100) <= 50:
+        if random.randrange(100) <= 65:
             embed = embed_3ch()
             await ch_an.send(embed=embed)
 
