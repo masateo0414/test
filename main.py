@@ -1084,7 +1084,7 @@ async def on_message(message):
                 await message.channel.send(f"/scoreboard players add {tag} change_minepoint {amount}")
 
 
-    # 3 : ちんこ検知
+    # 3-1 : ちんこ検知
     chinkoes = ["ちんこ","chinko","tinko","チンコ","ﾁﾝｺ",
                 "ちーんこ","チーンコ","ﾁｰﾝｺ","ちんーこ","チンーコ","ﾁﾝｰｺ",
                 "ち～んこ","チ～ンコ",
@@ -1101,7 +1101,17 @@ async def on_message(message):
     if message.content.lower() in chinkoes or any(s in message.content.lower() for s in chinkoes):
         chinkoEmoji = "<:chinko:1134001412695674891>"
         await message.add_reaction(chinkoEmoji)
-    
+
+    # 3-2 : 暴言検知
+    chikues = ["しね","死ね","sine",
+                "ころす","殺す","korosu",
+                "だまれ","黙れ","damare",
+                "ブス","デブ","チビ","ガキ","カス","ゴミ"]
+    if message.content.lower() in chikues or any(s in message.content.lower() for s in chikues):
+        chikuEmoji = "<:ikunai:1134046737338732624>"
+        await message.add_reaction(chikuEmoji)
+
+
     # 4 : 3日チャンネル案追加
     if message.channel.id == 1329405973588086826: # の、案　のID
         if message.content.startswith("【") and message.content.endswith("】"):
