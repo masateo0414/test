@@ -40,7 +40,7 @@ workbook = gc.open_by_key(SPREADSHEET_KEY)
 
 
 
-bot = commands.Bot(command_prefix="!!", intents=discord.Intents.all())
+bot = commands.Bot(command_prefix="!!", help_command=None, intents=discord.Intents.all())
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -100,16 +100,36 @@ def addJosu(age):
         return f"{age}rd"
     else:
         return f"{age}th"
+    
+
+# // MARK: help
+@bot.command()
+async def help(ctx, *arg):
+    if len(arg) == 0:
+        embed = discord.Embed(title=":grey_question:HELP",
+                        description=f"# ´・-・)っhttps://discordapp.com/channels/1133831716507754536/1217748515288121426",
+                        color=0xdddddd)
+        
+        await ctx.send(embed=embed)
+    
+    else:
+        doc = func.helpDocument(arg[0])
+        if doc == "NF":
+            embed = discord.Embed(title=":grey_question:HELP",
+                description=f"そんなコマンドないと思う\n"
+                "# ´・-・)っhttps://discordapp.com/channels/1133831716507754536/1217748515288121426",
+                color=0xdddddd)
+        else:
+            embed = discord.Embed(title=":grey_question:HELP",
+                description=doc,
+                color=0xdddddd)
+        
+        await ctx.send(embed=embed)
 
 # // MARK: call
 @bot.command()
 async def call(ctx):
     await ctx.send("マ！")
-
-# // MARK: help
-@bot.command()
-async def send_bot_help(self):
-    await self.get_destination().send("https://discord.com/channels/1133831716507754536/1217748515288121426")
 
 # // MARK: shout
 @bot.command()
