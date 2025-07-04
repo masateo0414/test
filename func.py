@@ -48,7 +48,12 @@ def convCustomEmoji(str):
 
     return str
 
-help_docs = [ ["call",
+help_docs = [ ["help",
+              "## ―― !!help\n"
+              "botの使い方についてのヘルプが出せます\n"
+              "気付いてないかもしれませんが、あなたが今出したのがそれです"
+              ],
+              ["call",
               "## ―― !!call\n"
               "真鯖botが鳴きます"
               ],
