@@ -992,25 +992,25 @@ async def login_listreset(ctx):
     worksheet.batch_clear(["A:B"])
 
 #test~
-@bot.command()
-async def dbTest(ctx):
-    channel = bot.get_channel(1289170232782622751) #datebase
-    embed = discord.Embed(title=":hut:CHINCHIRO DOJO: RANK LIST", 
-            description=f"**【五段】 <@159985870458322944>**\n"
-                        f"**【四段】 <@235148962103951360>**\n"
-                        f"**【一般人】 <@414755451419230208>**",
-                color=0xee3700)
-    await channel.send(f"**【名人二段】 <@610826378971185152>**\n"
-                        f"**【七段】 <@1001800888001773588>**\n"
-                        f"**【六段★】 <@836563535722446850>**\n"
-                        f"**【四段★★】 <@778974168410226708>**\n"
-                        f"**【四段★】 <@699110927957622804>**\n"
-                        f"**【四段】 <@398044353207205892>**\n"
-                        f"**【一般人★★】 <@515090484889255938>**\n")
+# @bot.command()
+# async def dbTest(ctx):
+#     channel = bot.get_channel(1289170232782622751) #datebase
+#     embed = discord.Embed(title=":hut:CHINCHIRO DOJO: RANK LIST", 
+#             description=f"**【五段】 <@159985870458322944>**\n"
+#                         f"**【四段】 <@235148962103951360>**\n"
+#                         f"**【一般人】 <@414755451419230208>**",
+#                 color=0xee3700)
+#     await channel.send(f"**【名人二段】 <@610826378971185152>**\n"
+#                         f"**【七段】 <@1001800888001773588>**\n"
+#                         f"**【六段★】 <@836563535722446850>**\n"
+#                         f"**【四段★★】 <@778974168410226708>**\n"
+#                         f"**【四段★】 <@699110927957622804>**\n"
+#                         f"**【四段】 <@398044353207205892>**\n"
+#                         f"**【一般人★★】 <@515090484889255938>**\n")
 
-@bot.command()
-async def dbTest2(ctx,*arg):
-    await rankUpdate(arg[0],arg[1])
+# @bot.command()
+# async def dbTest2(ctx,*arg):
+#     await rankUpdate(arg[0],arg[1])
     # embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
     #                description=
     #                f"## 2024/09/28\n# <@562955628268486696>\n# :confetti_ball:HAPPY 19th BIRTHDAY!!:tada:",
@@ -1019,25 +1019,25 @@ async def dbTest2(ctx,*arg):
     #await channel.send(embed=embed)
     
 
-@bot.command()
-async def dbTest3(ctx):
-    ch_test = bot.get_channel(1329405973588086826)
+# @bot.command()
+# async def dbTest3(ctx):
+#     ch_test = bot.get_channel(1329405973588086826)
 
-    embed = embed_3ch()
-    await ch_test.send(embed=embed)
+#     embed = embed_3ch()
+#     await ch_test.send(embed=embed)
 
 
 
 #test~
-@bot.command()
-async def talkToNormal(ctx):
-    ws_reply = workbook.worksheet("reply")
-    meisi_list = ws_reply.col_values(2)
-    randomRep_dic = ws_reply.col_values(3)
-    randomRep_dic2 = ws_reply.col_values(4)
-    reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
-    channel = bot.get_channel(1133837604991811665) #ノーマル雑談
-    await channel.send(reply)
+# @bot.command()
+# async def talkToNormal(ctx):
+#     ws_reply = workbook.worksheet("reply")
+#     meisi_list = ws_reply.col_values(2)
+#     randomRep_dic = ws_reply.col_values(3)
+#     randomRep_dic2 = ws_reply.col_values(4)
+#     reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
+#     channel = bot.get_channel(1133837604991811665) #ノーマル雑談
+#     await channel.send(reply)
 
 
 
