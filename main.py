@@ -1240,11 +1240,15 @@ async def loop():
                 await ch_normal.send(embed=embed)
         
         # 3days chat
-        rnd_3days = random.randrange(100) 
-        await ch_test.send(rnd_3days)
-        if rnd_3days <= 50:
+        ws_3ch = workbook.worksheet("3ch")
+        flag_3ch = ws_3ch.acell("D1").value
+        
+        if flag_3ch == "DERU":
             embed = embed_3ch()
             await ch_an.send(embed=embed)
+            ws_3ch.update_acell("D1", "DENAI")
+        elif flag_3ch == "DENAI":
+            ws_3ch.update_acell("D1", "DERU")
 
 
     
@@ -1267,13 +1271,15 @@ def embed_3ch():
     ws_3ch = workbook.worksheet("3ch")
     an_list = ws_3ch.col_values(1)
     backNo = ws_3ch.acell("B1").value
-    title = random.choice(an_list)
+    choice_row = random.randint(2, len(an_list))
+    title = ws_3ch.acell(f"B{choice_row}").value
 
     embed = discord.Embed(title=f":three:3 DAYS TEXT CHANNEL",
     description=f"# \#{backNo}『{title}』",
     color=0x1e90ff)
 
     ws_3ch.update_acell("B1", int(backNo)+1)
+    ws_3ch.delete_rows(choice_row)
 
     return embed
 
