@@ -986,10 +986,10 @@ async def rankUpdate(user, rank):
 
 # // MARK: test
 #!!login_listreset
-@bot.command()
-async def login_listreset(ctx):
-    worksheet = workbook.sheet1
-    worksheet.batch_clear(["A:B"])
+# @bot.command()
+# async def login_listreset(ctx):
+#     worksheet = workbook.sheet1
+#     worksheet.batch_clear(["A:B"])
 
 #test~
 # @bot.command()
@@ -1210,8 +1210,8 @@ async def loop():
 
         # login reset
         await ch_test.send(f"{todate}こうしんおっけー！！")
-        worksheet = workbook.worksheet("login")
-        worksheet.batch_clear(["A:B"])
+        ws_login = workbook.worksheet("login")
+        ws_login.batch_clear(["A:B"])
 
         # birthday
         today = dt_now.strftime("%m%d")
@@ -1272,7 +1272,7 @@ def embed_3ch():
     an_list = ws_3ch.col_values(1)
     backNo = ws_3ch.acell("B1").value
     choice_row = random.randint(2, len(an_list))
-    title = ws_3ch.acell(f"B{choice_row}").value
+    title = ws_3ch.acell(f"A{choice_row}").value
 
     embed = discord.Embed(title=f":three:3 DAYS TEXT CHANNEL",
     description=f"# \#{backNo}『{title}』",
