@@ -653,7 +653,7 @@ async def work(ctx):
                 color=0x000030)
             await ctx.send(embed=embed)
 
-            gain = random.randint(100,400)
+            gain = random.randint(400,800)
             now_sv = svAdd(ctx.author.id, gain)
             embed = discord.Embed(title=f":pick:WORK FOR MONEY",
                 description=
@@ -1130,6 +1130,7 @@ async def on_message(message):
     not_chikues = ["ですしね","ますしね",
                    "アーカイブス","ウェブスター","カブス","ギブス","コロンブス","デーブスペクター",
                    "ドライブスルー","ボブスレー","ライブスペース","ラブストーリー","ロブスター",
+                   "サブスク","バイブス","ビブス",
                    "ランデブー",
                    "チビっこ","チビッコ",
                    "ハガキ","ネガキャン","ハミガキ","ラクガキ",
