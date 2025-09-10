@@ -1261,8 +1261,10 @@ async def loop():
         if flag_3ch == "DERU":
             embed = embed_3ch()
             await ch_an.send(embed=embed)
-            ws_3ch.update_acell("D1", "DENAI")
-        elif flag_3ch == "DENAI":
+            ws_3ch.update_acell("D1", "DENAI2")
+        elif flag_3ch == "DENAI2":
+            ws_3ch.update_acell("D1", "DENAI1")
+        elif flag_3ch == "DENAI1":
             ws_3ch.update_acell("D1", "DERU")
 
 
