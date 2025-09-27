@@ -985,11 +985,18 @@ async def rankUpdate(user, rank):
 
 
 # // MARK: test
-#!!login_listreset
-# @bot.command()
-# async def login_listreset(ctx):
-#     worksheet = workbook.sheet1
-#     worksheet.batch_clear(["A:B"])
+# !!login_listreset
+@bot.command()
+async def login_reset(ctx):
+    worksheet = workbook.worksheet("login")
+    worksheet.batch_clear(["A:B"])
+
+    embed = discord.Embed(title=":gear:DEBUG: LOGIN RESET",
+                        description=f"ログインボーナスの取得状況をリセットしました\n"
+                        f"(実行者: <@{ctx.author.id}>)",
+                        color=0xdddddd)
+        
+    await ctx.send(embed=embed)
 
 #test~
 # @bot.command()
@@ -1220,52 +1227,54 @@ async def loop():
     #await channel.send(now)
 
     # 00:00 events
-    if old_now != now and now == "00:00":
-    # if True:
+    if old_now != now:
+        print(f"loop at {now}")
+        if now == "00:00":
+        # if True:
 
-        # login reset
-        await ch_test.send(f"{todate}こうしんおっけー！！")
-        ws_login = workbook.worksheet("login")
-        ws_login.batch_clear(["A:B"])
+            # login reset
+            await ch_test.send(f"{todate}こうしんおっけー！！")
+            ws_login = workbook.worksheet("login")
+            ws_login.batch_clear(["A:B"])
 
-        # birthday
-        today = dt_now.strftime("%m%d")
-        print(today)
-        toyear = dt_now.year
-        ws_birth = workbook.worksheet("birth")
-        birthday_list = ws_birth.col_values(3)
+            # birthday
+            today = dt_now.strftime("%m%d")
+            print(today)
+            toyear = dt_now.year
+            ws_birth = workbook.worksheet("birth")
+            birthday_list = ws_birth.col_values(3)
 
-        for i in range(len(birthday_list)):
-            if today == birthday_list[i][-4:]:
-                birth_userid = ws_birth.cell(i+1,1).value
-                birth_year = birthday_list[i][:4]
+            for i in range(len(birthday_list)):
+                if today == birthday_list[i][-4:]:
+                    birth_userid = ws_birth.cell(i+1,1).value
+                    birth_year = birthday_list[i][:4]
 
-                if birth_year == "0000":
-                    embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
-                    description=
-                    f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY BIRTHDAY!!:tada:",
-                    color=0xff6000)
-                else:
-                    age = toyear - int(birth_year)
-                    embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
-                    description=
-                    f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY {addJosu(age)} BIRTHDAY!!:tada:",
-                    color=0xff6000)
-                
-                await ch_normal.send(embed=embed)
-        
-        # 3days chat
-        ws_3ch = workbook.worksheet("3ch")
-        flag_3ch = ws_3ch.acell("D1").value
-        
-        if flag_3ch == "DERU":
-            embed = embed_3ch()
-            await ch_an.send(embed=embed)
-            ws_3ch.update_acell("D1", "DENAI2")
-        elif flag_3ch == "DENAI2":
-            ws_3ch.update_acell("D1", "DENAI1")
-        elif flag_3ch == "DENAI1":
-            ws_3ch.update_acell("D1", "DERU")
+                    if birth_year == "0000":
+                        embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
+                        description=
+                        f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY BIRTHDAY!!:tada:",
+                        color=0xff6000)
+                    else:
+                        age = toyear - int(birth_year)
+                        embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
+                        description=
+                        f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY {addJosu(age)} BIRTHDAY!!:tada:",
+                        color=0xff6000)
+                    
+                    await ch_normal.send(embed=embed)
+            
+            # 3days chat
+            ws_3ch = workbook.worksheet("3ch")
+            flag_3ch = ws_3ch.acell("D1").value
+            
+            if flag_3ch == "DERU":
+                embed = embed_3ch()
+                await ch_an.send(embed=embed)
+                ws_3ch.update_acell("D1", "DENAI2")
+            elif flag_3ch == "DENAI2":
+                ws_3ch.update_acell("D1", "DENAI1")
+            elif flag_3ch == "DENAI1":
+                ws_3ch.update_acell("D1", "DERU")
 
 
     
