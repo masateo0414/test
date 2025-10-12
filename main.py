@@ -1122,7 +1122,7 @@ async def on_message(message):
                 "珍棒","珍珍","ちんぼう","チンボウ",
                 "ぽこちん","pokochin","pokotin","ポコチン","ﾎﾟｺﾁﾝ",
                 "肉棒","陰茎","ぺにす","ペニス","ﾍﾟﾆｽ",
-                "まら","マラ","ﾏﾗ","魔羅","penis",
+                "マラ","ﾏﾗ","魔羅","penis",
                 "てぃんてぃん","ティンティン","ティムポ","ちーんこ","チーンコ",
                 "男根","いちもつ","イチモツ","ｲﾁﾓﾂ","ファルス"]
     if message.content.lower() in chinkoes or any(s in message.content.lower() for s in chinkoes):
