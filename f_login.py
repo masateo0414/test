@@ -335,6 +335,10 @@ bonus_list = ["50円",
               "熊よけの鈴",
               "猟銃",
               "罠",
+              "不発弾",
+              "⚠️罰ゲーム⚠️\n## 今日、歩くの禁止",
+              "挑戦回数",
+              "縦の糸",
 
 
               "自分しか書き込めないテキストチャンネル",
@@ -378,7 +382,9 @@ bonus_list = ["50円",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1302131244217405502/60981498_p0_square1200.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1311893177006952528/IMG_1876.png",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1326607951988916234/IMG_4671.jpg",
-              "https://cdn.discordapp.com/attachments/1152178864404049920/1340243074248605696/GjuleeCbgAAq0ui.jpg"]
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1340243074248605696/GjuleeCbgAAq0ui.jpg",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1439931439729610842/image.png",
+              "https://cdn.discordapp.com/attachments/1152178864404049920/1442846930702045204/fruit413.jpg"]
               
 
 def getBonus():
