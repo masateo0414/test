@@ -1163,6 +1163,10 @@ async def on_message(message):
 
             ws_3ch.update_cell(len(an_list)+1, 1, an)
     
+    # 5 : shovel系の勘違いに対して
+    if message.content.startswith(("!!sh ","!!shg ","!!shr ","!!shc ","!!shm ","!!shy ")):
+        await message.channel.send("たぶん、ビックリマークがいっこ多いぞ")
+
     # await bot.process_commands(message)
 
     # ↑これいったんナシで　以下、ctxから無理やり実行するやつ
@@ -1194,11 +1198,6 @@ async def on_command(ctx):
 
 
 # -------------------------------------------------------------------------------------------
-
-# // MARK: sh-error
-@bot.command()
-async def sh(ctx):
-    await ctx.send("たぶん、ビックリマークがいっこ多いぞ")
 
 # // MARK: on_command_error
 @bot.event
