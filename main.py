@@ -1111,7 +1111,7 @@ async def on_message(message):
                 await message.channel.send(f"/scoreboard players add {tag} change_minepoint {amount}")
 
 
-    # 3-1 : ちんこ検知
+    # 3 : ちんこ検知
     chinkoes = ["ちんこ","chinko","tinko","チンコ","ﾁﾝｺ",
                 "ちーんこ","チーンコ","ﾁｰﾝｺ","ちんーこ","チンーコ","ﾁﾝｰｺ",
                 "ち～んこ","チ～ンコ",
@@ -1128,30 +1128,6 @@ async def on_message(message):
     if message.content.lower() in chinkoes or any(s in message.content.lower() for s in chinkoes):
         chinkoEmoji = "<:chinko:1134001412695674891>"
         await message.add_reaction(chinkoEmoji)
-
-    # 3-2 : 暴言検知
-    chikues = ["しね","死ね","sine",
-                "ころす","殺す","korosu",
-                "だまれ","黙れ","damare",
-                "ブス","デブ","チビ","ガキ","カス","ゴミ"]
-    not_chikues = ["ですしね","ますしね",
-                   "アーカイブス","ウェブスター","カブス","ギブス","コロンブス","デーブスペクター",
-                   "ドライブスルー","ボブスレー","ライブスペース","ラブストーリー","ロブスター",
-                   "サブスク","バイブス","ビブス",
-                   "ランデブー",
-                   "チビっこ","チビッコ",
-                   "ハガキ","ネガキャン","ハミガキ","ラクガキ",
-                   "イカスミ","カスカベ","カスケード","カスタネット","カスタマイズ","カスタマイザ",
-                   "カスタマー","カスタム","カスタード","カステラ","カスピ","クロッカス",
-                   "酒カス","サーカス","絞りカス","食べカス","ダマスカス","天カス",
-                   "ディスカス","デカスロン","残りカス","バッカス","フォーカス","マラカス",
-                   "ルーカス",
-                   "イチゴミルク","ゴミ捨て","ゴミ処理","ゴミ箱","ゴミの山",
-                   "資源ゴミ","不燃ゴミ","可燃ゴミ","大型ゴミ","粗大ゴミ"]
-    if message.content.lower() in chikues or any(s in message.content.lower() for s in chikues):
-        if message.content.lower() not in not_chikues:
-            chikuEmoji = "<:ikunai:1134046737338732624>"
-            await message.add_reaction(chikuEmoji)
 
 
     # 4 : 3日チャンネル案追加
