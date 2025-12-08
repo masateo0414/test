@@ -1199,7 +1199,7 @@ async def loop():
     ch_test = bot.get_channel(ch_test_id)
     ch_normal = bot.get_channel(1133837604991811665) #ノーマル雑談
     ch_an = bot.get_channel(1329405973588086826) #の、案
-    #await channel.send(now)
+    print(f"{old_now}, {now}")
 
     # 00:00 events
     if old_now != now:
