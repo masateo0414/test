@@ -40,14 +40,15 @@ workbook = gc.open_by_key(SPREADSHEET_KEY)
 
 
 
-bot = commands.Bot(command_prefix="!!", help_command=None, intents=discord.Intents.all())
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix="!!", intents=intents, help_command=None)
 
-intents = discord.Intents.default()
-intents.message_content = True
-intents.messages = True
-intents.guilds = True
-intents.members = True
-client = discord.Client(intents=intents)
+#intents = discord.Intents.default()
+#intents.message_content = True
+#intents.messages = True
+#intents.guilds = True
+#intents.members = True
+#client = discord.Client(intents=intents)
 
 
 # Botを通すやつ
@@ -57,7 +58,7 @@ async def global_allow_bots(ctx):
 
 #真鯖のguild(未解決)
 global guild
-guild = client.get_guild(1133831716507754536)
+guild = bot.get_guild(1133831716507754536)
 
 #MasateoのID
 global masateo_id
@@ -1199,7 +1200,7 @@ async def loop():
     ch_test = bot.get_channel(ch_test_id)
     ch_normal = bot.get_channel(1133837604991811665) #ノーマル雑談
     ch_an = bot.get_channel(1329405973588086826) #の、案
-    print(f"{old_now}, {now}")
+    #print(f"{old_now}, {now}")
 
     # 00:00 events
     if old_now != now:
