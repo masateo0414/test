@@ -79,8 +79,13 @@ old_now = ""
 @bot.event
 async def on_ready():
     print("準備完了")
-    await bot.tree.sync()
-    loop.start()
+    try:
+        await bot.tree.sync()
+        print("tree sync ok")
+        loop.start()
+        print("loop started")
+    except Exception as e:
+        print("ERROR in on_ready:", e)
 
 #^^v お役立ちfunc v^^
 
