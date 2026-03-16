@@ -341,7 +341,7 @@ bonus_list = ["50円",
               "縦の糸",
 
 
-              "自分しか書き込めないテキストチャンネル",
+              #"自分しか書き込めないテキストチャンネル",
 
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152314872659451924/image0.jpg",
               "https://cdn.discordapp.com/attachments/1152178864404049920/1152469863802081350/shopping2.jpg",
