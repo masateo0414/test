@@ -1276,17 +1276,29 @@ async def loop():
 # 3日チャンネル抽選用
 def embed_3ch():
     ws_3ch = workbook.worksheet("3ch")
-    an_list = ws_3ch.col_values(1)
+    an_list = ws_3ch.col_values(1)  # A列を取得
+    b_list = ws_3ch.col_values(2)  # B列を取得
     backNo = ws_3ch.acell("B1").value
-    choice_row = random.randint(2, len(an_list))
-    title = ws_3ch.acell(f"A{choice_row}").value
 
-    embed = discord.Embed(title=f":three:3 DAYS TEXT CHANNEL",
-    description=f"# \#{backNo}『{title}』",
-    color=0x1e90ff)
+    # B2以降（インデックス1以降）に "this" が存在するか確認
+    if len(b_list) > 1 and "this" in b_list[1:]:
+        # 2行目以降で最初に "this" がある行番号（1始まり）を取得
+        choice_row = b_list.index("this", 1) + 1
+    else:
+        # "this" がない場合は従来通りランダム抽出
+        choice_row = random.randint(2, len(an_list))
 
-    ws_3ch.update_acell("B1", int(backNo)+1)
-    ws_3ch.delete_rows(choice_row)
+    # 取得済みの A列リストからタイトルを取得（API呼び出しの削減）
+    title = an_list[choice_row - 1]
+
+    embed = discord.Embed(
+        title=":three:3 DAYS TEXT CHANNEL",
+        description=f"# #{backNo}『{title}』",
+        color=0x1E90FF,
+    )
+
+    ws_3ch.update_acell("B1", int(backNo) + 1)
+    ws_3ch.delete_rows(choice_row)  # 該当行を削除
 
     return embed
 
