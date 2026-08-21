@@ -16,6 +16,7 @@ import f_dice
 import f_login
 import f_reply
 import f_sniper
+import f_slot
 
 load_dotenv()
 
@@ -75,6 +76,11 @@ dbch_id = 1217820622755987566
 #old_now初期化
 old_now = ""
 
+#slotのやつ
+ws_slot = workbook.worksheet("slot")
+user_achievements = {}
+
+# // MARK: on_ready
 # 起動したときに起こるイベント
 @bot.event
 async def on_ready():
@@ -82,6 +88,8 @@ async def on_ready():
     try:
         await bot.tree.sync()
         print("tree sync ok")
+
+        load_achievements()
 
         # ループがまだ動いていない場合のみ起動
         if not loop.is_running():
@@ -91,6 +99,8 @@ async def on_ready():
     except Exception as e:
         print("ERROR in on_ready:", e)
 
+
+# // MARK: any function
 #^^v お役立ちfunc v^^
 
 def pickID(mention):
@@ -110,6 +120,119 @@ def addJosu(age):
         return f"{age}rd"
     else:
         return f"{age}th"
+
+#slotのやつら
+def load_achievements():
+    """起動時にスプシから全ユーザーの実績を読み込む"""
+    global user_achievements
+    records = ws_slot.get_all_records()
+    for row in records:
+        uid = int(row["user_id"])
+        ids = (
+            set(row["unlocked_ids"].split(","))
+            if row.get("unlocked_ids")
+            else set()
+        )
+        user_achievements[uid] = ids
+
+
+def save_achievement(user_id: int, user_name: str, pattern_id: str):
+    """新しい役を獲得した時だけスプシとメモリを更新する"""
+    if user_id not in user_achievements:
+        user_achievements[user_id] = set()
+
+    if pattern_id in user_achievements[user_id]:
+        return False
+
+    user_achievements[user_id].add(pattern_id)
+    unlocked_str = ",".join(user_achievements[user_id])
+
+    try:
+        cell = ws_slot.find(str(user_id))
+        ws_slot.update_cell(cell.row, 2, user_name)
+        ws_slot.update_cell(cell.row, 3, unlocked_str)
+    except:
+        ws_slot.append_row([str(user_id), user_name, unlocked_str])
+
+    return True
+
+
+class SlotAchvView(discord.ui.View):
+
+    def __init__(self, author, unlocked_ids, per_page=7):
+        super().__init__(timeout=60)
+        self.author = author
+        self.unlocked_ids = unlocked_ids
+        self.per_page = per_page
+        self.current_page = 0
+        self.patterns = f_slot.WINNING_PATTERNS
+        self.total_pages = (
+            len(self.patterns) + self.per_page - 1
+        ) // self.per_page
+
+    def create_embed(self):
+        unlocked_count = len(self.unlocked_ids)
+        total_count = len(self.patterns)
+        progress = (
+            (unlocked_count / total_count) * 100 if total_count > 0 else 0
+        )
+
+        start_idx = self.current_page * self.per_page
+        end_idx = start_idx + self.per_page
+        page_items = self.patterns[start_idx:end_idx]
+
+        description = f"**コンプリート率: {unlocked_count}/{total_count} ({progress:.0f}%)**\n\n"
+
+        for p_id, emojis, rate, title, rarity in page_items:
+            emoji_str = f"{emojis[0]}{emojis[1]}{emojis[2]}"
+            if p_id in self.unlocked_ids:
+                description += f"✅ **[{rarity}] {title}** (+{rate}倍)\n└ {emoji_str}\n"
+            else:
+                description += f"🔒 **[{rarity}] ？？？？？？**\n└ ❓ ❓ ❓\n"
+
+        embed = discord.Embed(
+            title=f"🏆 {self.author.display_name} のスロットコレクション",
+            description=description,
+            color=0x00FF7F,
+        )
+        embed.set_footer(
+            text=f"Page {self.current_page + 1}/{self.total_pages} (全{total_count}種)"
+        )
+        return embed
+
+    @discord.ui.button(label="◀ 前へ", style=discord.ButtonStyle.secondary)
+    async def prev_button(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        if interaction.user.id != self.author.id:
+            await interaction.response.send_message(
+                "他の人のボタンは操作できません！", ephemeral=True
+            )
+            return
+        if self.current_page > 0:
+            self.current_page -= 1
+            await interaction.response.edit_message(
+                embed=self.create_embed(), view=self
+            )
+        else:
+            await interaction.response.defer()
+
+    @discord.ui.button(label="次へ ▶", style=discord.ButtonStyle.secondary)
+    async def next_button(
+        self, interaction: discord.Interaction, button: discord.ui.Button
+    ):
+        if interaction.user.id != self.author.id:
+            await interaction.response.send_message(
+                "他の人のボタンは操作できません！", ephemeral=True
+            )
+            return
+        if self.current_page < self.total_pages - 1:
+            self.current_page += 1
+            await interaction.response.edit_message(
+                embed=self.create_embed(), view=self
+            )
+        else:
+            await interaction.response.defer()
     
 
 # // MARK: help
@@ -289,150 +412,212 @@ async def memory(ctx,*arg):
 @bot.command()
 async def sv(ctx, *arg):
     if len(arg) == 0:
-        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+        embed = discord.Embed(
+            title="<:savar:1218331362415870032>SAVAR BANK",
+            description="ERROR!",
+            color=0x0074E1,
+        )
         await ctx.send(embed=embed)
         return
 
-    ws = workbook.worksheet("savar")
-
     # show - 確認
     if arg[0] == "show":
-        # デフォルトは自分の、指定がある場合はid抽出
-        if len(arg) == 1:
-            id = str(ctx.author.id)    
-        else:
-            id = pickID(arg[1])  
-
+        id = str(ctx.author.id) if len(arg) == 1 else pickID(arg[1])
         sv = svRead(id)
-        
-        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**<@{id}>\n所持Savar:**\n# <:savar:1218331362415870032>{sv:,}", color=0x0074e1)
+
+        embed = discord.Embed(
+            title="<:savar:1218331362415870032>SAVAR BANK",
+            description=f"**<@{id}>\n所持Savar:**\n# <:savar:1218331362415870032>{sv:,}",
+            color=0x0074E1,
+        )
         await ctx.send(embed=embed)
-    
+
     # give - 譲渡
-    if arg[0] == "give":
+    elif arg[0] == "give":
         if len(arg) != 3:
-            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+            embed = discord.Embed(
+                title="<:savar:1218331362415870032>SAVAR BANK",
+                description="ERROR!",
+                color=0x0074E1,
+            )
             await ctx.send(embed=embed)
             return
-        
-        fromID = ctx.author.id
+
+        fromID = str(ctx.author.id)
         toID = pickID(arg[1])
         add = int(arg[2])
 
         if add < 1:
-            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**:x:譲渡する金額は1以上を指定してください**", color=0x0074e1)
-            await ctx.send(embed=embed)
-            return
-        elif svRead(fromID) < add:
-            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"**:x:所持Savarを超える金額は譲渡できません**", color=0x0074e1)
+            embed = discord.Embed(
+                title="<:savar:1218331362415870032>SAVAR BANK",
+                description="**:x:譲渡する金額は1以上を指定してください**",
+                color=0x0074E1,
+            )
             await ctx.send(embed=embed)
             return
 
-        from_sv = svAdd(fromID, add*(-1))
+        # 事前チェック
+        current_from_sv = svRead(fromID)
+        if current_from_sv < add:
+            embed = discord.Embed(
+                title="<:savar:1218331362415870032>SAVAR BANK",
+                description="**:x:所持Savarを超える金額は譲渡できません**",
+                color=0x0074E1,
+            )
+            await ctx.send(embed=embed)
+            return
+
+        from_sv = svAdd(fromID, -add)
         to_sv = svAdd(toID, add)
 
-        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=
-        f"**:white_check_mark:以下の通りSavarが移動しました:**\n\n"
-        f"from : **<@{fromID}>**\n"
-        f"<:savar:1218331362415870032>{from_sv + add:,} ▶ **<:savar:1218331362415870032>{from_sv:,}**\n"
-        f"## ⇓ <:savar:1218331362415870032>{add:,} ⇓\n"
-        f"to : **<@{toID}>**\n"
-        f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n", color=0x0074e1)
+        embed = discord.Embed(
+            title="<:savar:1218331362415870032>SAVAR BANK",
+            description=(
+                f"**:white_check_mark:以下の通りSavarが移動しました:**\n\n"
+                f"from : **<@{fromID}>**\n"
+                f"<:savar:1218331362415870032>{from_sv + add:,} ▶ **<:savar:1218331362415870032>{from_sv:,}**\n"
+                f"## ⇓ <:savar:1218331362415870032>{add:,} ⇓\n"
+                f"to : **<@{toID}>**\n"
+                f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n"
+            ),
+            color=0x0074E1,
+        )
         await ctx.send(embed=embed)
 
-
-        if int(toID) == 1371392422390665236: #行き先がsumikaBotなら、両替コマンドを送信
+        if (
+            int(toID) == 1371392422390665236
+        ):  # 行き先がsumikaBotなら、両替コマンドを送信
             await ctx.send(f"--hc exchange {fromID} {add}")
         return
 
     # add - 追加
-    if arg[0] == "add":
+    elif arg[0] == "add":
         if ctx.author.id != masateo_id:
             return
-        
+
         if len(arg) != 3:
-            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+            embed = discord.Embed(
+                title="<:savar:1218331362415870032>SAVAR BANK",
+                description="ERROR!",
+                color=0x0074E1,
+            )
             await ctx.send(embed=embed)
             return
-        
+
         toID = pickID(arg[1])
         add = int(arg[2])
-        
+
         to_sv = svAdd(toID, add)
 
-        embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=
-        f"to : **<@{toID}>**\n"
-        f"## + <:savar:1218331362415870032>{add:,}\n"
-        f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n", color=0x0074e1)
+        embed = discord.Embed(
+            title="<:savar:1218331362415870032>SAVAR BANK",
+            description=(
+                f"to : **<@{toID}>**\n"
+                f"## + <:savar:1218331362415870032>{add:,}\n"
+                f"<:savar:1218331362415870032>{to_sv - add:,} ▶ **<:savar:1218331362415870032>{to_sv:,}**\n"
+            ),
+            color=0x0074E1,
+        )
         await ctx.send(embed=embed)
         return
-    
+
     # tag - ゲマタグ追加
-    if arg[0] == "tag":
+    elif arg[0] == "tag":
         if len(arg) != 2:
-            embed = discord.Embed(title="<:savar:1218331362415870032>SAVAR BANK", description=f"ERROR!", color=0x0074e1)
+            embed = discord.Embed(
+                title="<:savar:1218331362415870032>SAVAR BANK",
+                description="ERROR!",
+                color=0x0074E1,
+            )
             await ctx.send(embed=embed)
             return
-        
+
         tag = arg[1]
         userID = str(ctx.author.id)
 
         ws_tag = workbook.worksheet("tag")
-        tag_list = ws_tag.col_values(1)
+        rows = ws_tag.get_all_values()  # 一括取得
 
-        if tag in tag_list:
-            tag_id = ws_tag.cell((tag_list.index(tag))+1, 2,).value
-            embed = discord.Embed(title=":memo:GAMER TAG RESISTRATION", description=
-            f"**:warning:\"{tag}\" はすでに <@{tag_id}> によって登録されています**\n"
-            f"(そんなわけない場合は、Masateoに連絡してください)", color=0x0074e1)
-            await ctx.send(embed=embed)
-            return     
-        
-        ws_tag.update_cell(len(tag_list)+1, 1, tag)
-        ws_tag.update_cell(len(tag_list)+1, 2, userID)
+        # タグの重複チェック
+        for row in rows:
+            if len(row) > 0 and row[0] == tag:
+                tag_id = row[1] if len(row) > 1 else "不明"
+                embed = discord.Embed(
+                    title=":memo:GAMER TAG RESISTRATION",
+                    description=(
+                        f"**:warning:\"{tag}\" はすでに <@{tag_id}> によって登録されています**\n"
+                        f"(そんなわけない場合は、Masateoに連絡してください)"
+                    ),
+                    color=0x0074E1,
+                )
+                await ctx.send(embed=embed)
+                return
 
-        embed = discord.Embed(title=":memo:GAMER TAG RESISTRATION", description=
-        f":white_check_mark:ゲーマータグを登録しました:\n"
-        f"## <@{userID}> : {tag}", color=0x0074e1)
+        # 追加（append_rowで1回の通信に削減）
+        ws_tag.append_row([tag, userID])
+
+        embed = discord.Embed(
+            title=":memo:GAMER TAG RESISTRATION",
+            description=f":white_check_mark:ゲーマータグを登録しました:\n## <@{userID}> : {tag}",
+            color=0x0074E1,
+        )
         await ctx.send(embed=embed)
 
-# savar CRUDなど
+
+# --- savar CRUD関数（最適化版） ---
+
+
 def svCreate(id):
+    """新規ユーザー作成（API通信：1回）"""
     ws = workbook.worksheet("savar")
-
     user = bot.get_user(int(id))
+    user_name = user.name if user else "Unknown"
 
-    list = ws.col_values(1)
-    ws.update_cell(len(list)+1, 1, str(id))
-    ws.update_cell(len(list)+1, 2, user.name)
-    ws.update_cell(len(list)+1, 3, 0)
+    # append_row で1行まとめて書き込む（旧: 4回の通信 ➔ 新: 1回）
+    ws.append_row([str(id), user_name, 0])
 
 
 def svRead(id):
+    """所持数取得（API通信：1回）"""
     ws = workbook.worksheet("savar")
+    rows = ws.get_all_values()  # 全データを1回で取得
 
-    list = ws.col_values(1)
-    if str(id) in list:
-        sv = int(ws.cell(list.index(str(id))+1, 3,).value)
+    for row in rows:
+        if len(row) > 0 and row[0] == str(id):
+            return int(row[2])
+
+    # 見つからない場合は新規作成
+    svCreate(id)
+    return 0
+
+
+def svAdd(id, add):
+    """Savar加算・減算（API通信：読み1回 ＋ 書き1回）"""
+    ws = workbook.worksheet("savar")
+    rows = ws.get_all_values()
+
+    target_row = None
+    current_sv = 0
+
+    for idx, row in enumerate(rows):
+        if len(row) > 0 and row[0] == str(id):
+            target_row = idx + 1  # シートの行番号は1始まり
+            current_sv = int(row[2])
+            break
+
+    # ユーザーが存在しない場合
+    if target_row is None:
+        svCreate(id)
+        # 新規作成直後は 0 + add
+        new_sv = add
+        # 追加された最後の行を取得
+        target_row = len(rows) + 1
     else:
-        svCreate(id)
-        sv = 0
-    
-    return sv
+        new_sv = current_sv + add
 
-def svAdd(id,add):
-    ws = workbook.worksheet("savar")
-
-    list = ws.col_values(1)
-
-    if not str(id) in list:
-        svCreate(id)
-        list = ws.col_values(1)
-    
-    add_row = list.index(str(id))+1
-    sv = int(ws.cell(add_row, 3,).value)
-    ws.update_cell(add_row, 3, sv+add)
-    return sv+add
+    # 金額セルだけを更新（API 1回）
+    ws.update_cell(target_row, 3, new_sv)
+    return new_sv
 
 # // MARK: bomb
 @bot.command()
@@ -991,6 +1176,84 @@ async def rankUpdate(user, rank):
         new_mes += f"**{set[0]} {set[1]}**\n"
     new_mes = new_mes[:-1]
     await rank_mes.edit(content=new_mes)
+
+
+# // MARK: slot
+@bot.command()
+async def slot(ctx, arg: str = "100"):
+
+    # 開発者以外には準備中メッセージを表示
+    if ctx.author.id != masateo_id:
+        embed = discord.Embed(
+            title=":slot_machine: NEW MASABA SLOT",
+            description="### 🛠️ UNDER CONSTRUCTION...",
+            color=0xFFA500,
+        )
+        await ctx.send(embed=embed)
+        return
+
+    
+    SLOT_CHANNEL_ID = 123456789012345678  # 専用チャンネルID
+
+    if ctx.channel.id != SLOT_CHANNEL_ID and ctx.author.id != masateo_id:
+        await ctx.send("**:x: スロット専用チャンネルで遊んでね**")
+        return
+
+    # --- 実績表示コマンド: !!slot achv ---
+    if arg.lower() in ["achv", "list", "図鑑"]:
+        unlocked = user_achievements.get(ctx.author.id, set())
+        view = SlotAchvView(ctx.author, unlocked)
+        await ctx.send(embed=view.create_embed(), view=view)
+        return
+
+    # 数値チェック
+    if not arg.isdigit():
+        await ctx.send("**:x: 賭け金を数字で指定してください（例: !!slot 100）**")
+        return
+
+    bet = int(arg)
+    if bet < 100:
+        await ctx.send("**:x: 賭け金は100 Savar以上に指定してください**")
+        return
+
+    # 所持金チェック
+    user_sv = svRead(ctx.author.id)
+    if user_sv < bet:
+        await ctx.send("**:x: Savarが足りません！**")
+        return
+
+    # スロット実行
+    p_id, res, payout_rate, title, rarity = f_slot.spin()
+
+    gain = int(bet * payout_rate)
+    delta = gain - bet
+    now_sv = svAdd(ctx.author.id, delta)
+
+    slot_display = f"{res[0]} {res[1]} {res[2]}"
+
+    if payout_rate > 0:
+        # 新規獲得判定＆保存（ユーザーの表示名 display_name も渡す）
+        is_new = save_achievement(
+            ctx.author.id, ctx.author.name, p_id
+        )
+        new_tag = " ✨ **[ NEW COLLECTION! ]**" if is_new else ""
+
+        msg = (
+            f"# {slot_display}\n"
+            f"### 🎯【[{rarity}] {title}】 (+{payout_rate}倍){new_tag}\n"
+            f"**🎉 WIN! +{gain:,} Savar!**"
+        )
+        color = 0xFFD700
+    else:
+        msg = f"# {slot_display}\n**💦 FELL... -{bet:,} Savar**"
+        color = 0x808080
+
+    embed = discord.Embed(
+        title=":slot_machine:SAVAR SLOT",
+        description=f"<@{ctx.author.id}>\n{msg}\n\nTOTAL ▶ <:savar:1218331362415870032>{now_sv:,}",
+        color=color,
+    )
+    await ctx.send(embed=embed)
 
 
 
