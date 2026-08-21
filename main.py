@@ -75,12 +75,6 @@ dbch_id = 1217820622755987566
 #old_now初期化
 old_now = ""
 
-# setup_hookでループを開始する（on_readyと違い、起動時に1度だけ確実に実行される）
-@bot.setup_hook
-async def setup_hook():
-    loop.start()
-    print("loop started in setup_hook")
-
 # 起動したときに起こるイベント
 @bot.event
 async def on_ready():
@@ -88,6 +82,12 @@ async def on_ready():
     try:
         await bot.tree.sync()
         print("tree sync ok")
+
+        # ループがまだ動いていない場合のみ起動
+        if not loop.is_running():
+            loop.start()
+            print("loop started")
+
     except Exception as e:
         print("ERROR in on_ready:", e)
 
