@@ -85,10 +85,10 @@ WIN_RATE = 0.35
 # 重みの合計が 100 になるように設定
 RARITY_WEIGHTS = {
     "USR": 0.1,  # 当たり1,000回に1回の幻枠 (0.1%)
-    "SSR": 2.0,  # 激レア (2.0%)
-    "SR": 15.9,  # 中当り (10.9%)
-    "R": 42.9,  # 小当り・主軸 (37.0%)
-    "N": 40.0,  # 元返し系 (50.0%)
+    "SSR": 1.0,  # 激レア (2.0%)
+    "SR": 12.0,  # 中当り (10.9%)
+    "R": 40.0,  # 小当り・主軸 (37.0%)
+    "N": 46.9,  # 元返し系 (50.0%)
 }
 
 # 1. 当たりの目リスト（絵文字の個数は1個でも4個でも可変！）
@@ -217,7 +217,25 @@ def spin():
         selected_rarity = random.choices(
             available_rarities, weights=rarity_weights, k=1
         )[0]
-        selected = random.choice(patterns_by_rarity[selected_rarity])
+
+        candidates = patterns_by_rarity[selected_rarity]
+
+        # レアリティ内の役ごとに重みを計算（基本は1、高額倍率は重みを下げる例）
+        pattern_weights = []
+        for p in candidates:
+            multiplier = p[2]  # selected[2] が倍率
+            if selected_rarity == "USR":
+                if multiplier >= 1000:
+                    pattern_weights.append(2)   # 1000倍は重み1（約10%）
+                elif multiplier >= 400:
+                    pattern_weights.append(3)   # 414倍は重み2（約20%）
+                else:
+                    pattern_weights.append(5)   # 100倍は重み7（約70%）
+            else:
+                pattern_weights.append(1)      # 他のレアリティは均等
+
+        # 重み付きで1つ選択
+        selected = random.choices(candidates, weights=pattern_weights, k=1)[0]
 
         return (
             selected[0],
