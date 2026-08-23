@@ -136,16 +136,26 @@ def load_achievements():
         user_achievements[uid] = ids
 
 
-def save_achievement(user_id: int, user_name: str, pattern_id: str):
-    """新しい役を獲得した時だけスプシとメモリを更新する"""
+def save_achievement(user_id, user_name, p_id):
+    # p_id が None や空の場合は実績保存しない
+    if not p_id:
+        return False
+
+    # 初期化チェック
     if user_id not in user_achievements:
         user_achievements[user_id] = set()
 
-    if pattern_id in user_achievements[user_id]:
-        return False
+    str_p_id = str(p_id)
+    is_new = str_p_id not in user_achievements[user_id]
 
-    user_achievements[user_id].add(pattern_id)
-    unlocked_str = ",".join(user_achievements[user_id])
+    if is_new:
+        user_achievements[user_id].add(str_p_id)
+
+    # 過去に入り込んでしまった None や非文字列をすべて除去・文字列化して安全に連結
+    clean_set = {str(x) for x in user_achievements[user_id] if x is not None}
+    user_achievements[user_id] = clean_set  # 汚染されたデータをきれいなデータで上書き
+    
+    unlocked_str = ",".join(clean_set)
 
     try:
         cell = ws_slot.find(str(user_id))
@@ -154,12 +164,13 @@ def save_achievement(user_id: int, user_name: str, pattern_id: str):
     except:
         ws_slot.append_row([str(user_id), user_name, unlocked_str])
 
-    return True
+    return is_new
 
 
+# --- コレクション表示UI ---
 class SlotAchvView(discord.ui.View):
 
-    def __init__(self, author, unlocked_ids, per_page=7):
+    def __init__(self, author, unlocked_ids, per_page=10):  # 1ページ10件に設定
         super().__init__(timeout=60)
         self.author = author
         self.unlocked_ids = unlocked_ids
@@ -173,66 +184,79 @@ class SlotAchvView(discord.ui.View):
     def create_embed(self):
         unlocked_count = len(self.unlocked_ids)
         total_count = len(self.patterns)
-        progress = (
-            (unlocked_count / total_count) * 100 if total_count > 0 else 0
-        )
 
         start_idx = self.current_page * self.per_page
         end_idx = start_idx + self.per_page
         page_items = self.patterns[start_idx:end_idx]
 
-        description = f"**コンプリート率: {unlocked_count}/{total_count} ({progress:.0f}%)**\n\n"
+        description = f"## {unlocked_count}/{total_count} \n\n"
 
-        for p_id, emojis, rate, title, rarity in page_items:
-            emoji_str = f"{emojis[0]}{emojis[1]}{emojis[2]}"
+        for i, (p_id, emojis, rate, title, rarity) in enumerate(page_items):
+            # No.01, No.02 のように全体での通し番号を計算
+            no_num = start_idx + i + 1
+            no_str = f"No.{no_num:02d}"
+
+            # 絵文字リストをスペース区切りで結合（可変対応）
+            emoji_str = "".join(emojis)
+
             if p_id in self.unlocked_ids:
-                description += f"✅ **[{rarity}] {title}** (+{rate}倍)\n└ {emoji_str}\n"
+                description += f"✅ **{no_str} [ {rarity} ] {title}** \n ┗ {emoji_str}\n"
             else:
-                description += f"🔒 **[{rarity}] ？？？？？？**\n└ ❓ ❓ ❓\n"
+                description += f"🔒 **{no_str} [ {rarity} ] ？**\n ┗ ❓❓❓\n"
 
         embed = discord.Embed(
-            title=f"🏆 {self.author.display_name} のスロットコレクション",
+            title=f"🏆 Achievements",
             description=description,
             color=0x00FF7F,
         )
+        embed.set_author(
+                    name=f"{self.author.display_name}",
+                    icon_url=self.author.display_avatar.url
+                )
         embed.set_footer(
-            text=f"Page {self.current_page + 1}/{self.total_pages} (全{total_count}種)"
+            text=f"PAGE {self.current_page + 1}/{self.total_pages}"
         )
         return embed
 
-    @discord.ui.button(label="◀ 前へ", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="◀ PREV", style=discord.ButtonStyle.secondary)
     async def prev_button(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         if interaction.user.id != self.author.id:
             await interaction.response.send_message(
-                "他の人のボタンは操作できません！", ephemeral=True
+                "コラッ！他人のボタンを勝手に押さない", ephemeral=True
             )
             return
+
+        # 最初のページなら最後のページへループ、それ以外は1つ戻る
         if self.current_page > 0:
             self.current_page -= 1
-            await interaction.response.edit_message(
-                embed=self.create_embed(), view=self
-            )
         else:
-            await interaction.response.defer()
+            self.current_page = self.total_pages - 1
 
-    @discord.ui.button(label="次へ ▶", style=discord.ButtonStyle.secondary)
+        await interaction.response.edit_message(
+            embed=self.create_embed(), view=self
+        )
+
+    @discord.ui.button(label="NEXT ▶", style=discord.ButtonStyle.secondary)
     async def next_button(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
         if interaction.user.id != self.author.id:
             await interaction.response.send_message(
-                "他の人のボタンは操作できません！", ephemeral=True
+                "コラッ！他人のボタンを勝手に押さない", ephemeral=True
             )
             return
+
+        # 最後のページなら最初のページへループ、それ以外は1つ進む
         if self.current_page < self.total_pages - 1:
             self.current_page += 1
-            await interaction.response.edit_message(
-                embed=self.create_embed(), view=self
-            )
         else:
-            await interaction.response.defer()
+            self.current_page = 0
+
+        await interaction.response.edit_message(
+            embed=self.create_embed(), view=self
+        )
     
 
 # // MARK: help
@@ -262,7 +286,7 @@ async def help(ctx, *arg):
 # // MARK: call
 @bot.command()
 async def call(ctx):
-    await ctx.send("マ！")
+    await ctx.send("マ！<a:gaming:1231223018043347044>")
 
 # // MARK: shout
 @bot.command()
@@ -566,21 +590,20 @@ async def sv(ctx, *arg):
 
 # --- savar CRUD関数（最適化版） ---
 
+ws_savar = workbook.worksheet("savar")
 
 def svCreate(id):
     """新規ユーザー作成（API通信：1回）"""
-    ws = workbook.worksheet("savar")
     user = bot.get_user(int(id))
     user_name = user.name if user else "Unknown"
 
     # append_row で1行まとめて書き込む（旧: 4回の通信 ➔ 新: 1回）
-    ws.append_row([str(id), user_name, 0])
+    ws_savar.append_row([str(id), user_name, 0])
 
 
 def svRead(id):
     """所持数取得（API通信：1回）"""
-    ws = workbook.worksheet("savar")
-    rows = ws.get_all_values()  # 全データを1回で取得
+    rows = ws_savar.get_all_values()  # 全データを1回で取得
 
     for row in rows:
         if len(row) > 0 and row[0] == str(id):
@@ -593,8 +616,7 @@ def svRead(id):
 
 def svAdd(id, add):
     """Savar加算・減算（API通信：読み1回 ＋ 書き1回）"""
-    ws = workbook.worksheet("savar")
-    rows = ws.get_all_values()
+    rows = ws_savar.get_all_values()
 
     target_row = None
     current_sv = 0
@@ -616,7 +638,7 @@ def svAdd(id, add):
         new_sv = current_sv + add
 
     # 金額セルだけを更新（API 1回）
-    ws.update_cell(target_row, 3, new_sv)
+    ws_savar.update_cell(target_row, 3, new_sv)
     return new_sv
 
 # // MARK: bomb
@@ -1181,78 +1203,199 @@ async def rankUpdate(user, rank):
 # // MARK: slot
 @bot.command()
 async def slot(ctx, arg: str = "100"):
-
     # 開発者以外には準備中メッセージを表示
-    if ctx.author.id != masateo_id:
-        embed = discord.Embed(
-            title=":slot_machine: NEW MASABA SLOT",
-            description="### 🛠️ UNDER CONSTRUCTION...",
-            color=0xFFA500,
-        )
-        await ctx.send(embed=embed)
-        return
+    # if ctx.author.id != masateo_id:
+    #     embed = discord.Embed(
+    #         title=":slot_machine:NEW MASABA SLOT",
+    #         description="### 🛠️ UNDER CONSTRUCTION...",
+    #         color=0xFFA500,
+    #     )
+    #     await ctx.send(embed=embed)
+    #     return
 
-    
-    SLOT_CHANNEL_ID = 123456789012345678  # 専用チャンネルID
-
-    if ctx.channel.id != SLOT_CHANNEL_ID and ctx.author.id != masateo_id:
-        await ctx.send("**:x: スロット専用チャンネルで遊んでね**")
-        return
-
-    # --- 実績表示コマンド: !!slot achv ---
+    # ★ 1. 実績表示コマンドはチャンネル制限の前に実行（どのチャンネルでもOK）
     if arg.lower() in ["achv", "list", "図鑑"]:
         unlocked = user_achievements.get(ctx.author.id, set())
         view = SlotAchvView(ctx.author, unlocked)
         await ctx.send(embed=view.create_embed(), view=view)
         return
 
-    # 数値チェック
+    # ★ 2. スロット専用チャンネルチェック (通常のスロットプレイ時のみ適用)
+    SLOT_CHANNEL_ID = 1540964066045206599  # Dedicated channel ID
+
+    if ctx.channel.id != SLOT_CHANNEL_ID and ctx.author.id != masateo_id:
+        embed = discord.Embed(
+            title=":slot_machine:NEW MASABA SLOT",
+            description=f"## :x: ここでは回せません\n<#{SLOT_CHANNEL_ID}> へ",
+            color=0xFFA500
+        )
+        await ctx.send(embed=embed)
+        return
+
+    # --- 実績表示コマンド: !!slot achv ---
+    if arg.lower() in ["achv", "list"]:
+        unlocked = user_achievements.get(ctx.author.id, set())
+        view = SlotAchvView(ctx.author, unlocked)
+        await ctx.send(embed=view.create_embed(), view=view)
+        return
+
+# --- メッセージ整形用ローカル関数 ---
+    def build_slot_result(p_id, res, payout_rate, title, rarity, bet):
+        gain = int(bet * payout_rate)
+        delta = gain - bet
+        now_sv = svAdd(ctx.author.id, delta)
+        slot_display = "".join(res)
+
+        # A. 何らかの役が成立した場合 (p_id が存在する)
+        if p_id is not None:
+            is_new = save_achievement(ctx.author.id, ctx.author.name, p_id)
+            new_tag = ":new:" if is_new else ""
+
+            # 1. 1倍以上の勝ち（等倍以上）
+            if payout_rate >= 1:
+                msg = (
+                    f"# {slot_display}\n"
+                    f"### [{rarity}] {title} {new_tag}\n"
+                    f"(+{payout_rate}倍)\n\n"
+                    f"**🎉 WIN! +<:savar:1218331362415870032>{gain:,}**"
+                )
+                color = 0xFFD700  # ゴールド
+
+            # 2. 0倍〜1未満の微妙な当たり (元本割れ・0倍など)
+            elif payout_rate >= 0:
+                msg = (
+                    f"# {slot_display}\n"
+                    f"### [{rarity}] {title} {new_tag}\n"
+                    f"({payout_rate}倍)\n\n"
+                    f"**🤔 WIN? +<:savar:1218331362415870032>{gain:,}**"
+                )
+                color = 0xE67E22  # オレンジ (微妙な当たり感演出)
+
+            # 3. 特大ハズレ・没収 (マイナス配当)
+            else:
+                loss_amount = abs(gain)
+                msg = (
+                    f"# {slot_display}\n"
+                    f"### [{rarity}] {title} {new_tag}\n"
+                    f"({payout_rate}倍)\n\n"
+                    f"**💀 LOSE! -<:savar:1218331362415870032>{loss_amount:,}**"
+                )
+                color = 0x7400B0  # 紫
+
+        # B. 完全に役が揃わなかった通常ハズレ (p_id が None)
+        else:
+            msg = f"# {slot_display}\nｻﾞﾝﾈﾝ\n"
+            color = 0x808080  # グレー
+
+        return msg, color, now_sv
+
+    # --- 鯖主限定: 特定IDの出目を直接召喚 (例: !!slot p1 や !!slot p15) ---
+    if ctx.author.id == masateo_id and arg.lower().startswith("p") and arg[1:].isdigit():
+        target_id = int(arg[1:])
+        pattern = f_slot.get_pattern(target_id)
+
+        if not pattern:
+            await ctx.send(f"**:x: パターンID `{target_id}` は存在しません**")
+            return
+
+        p_id, res, payout_rate, title, rarity = pattern
+        bet = 100  # デバッグ時の仮賭け金 (100 Savar)
+
+        msg, color, now_sv = build_slot_result(
+            p_id, res, payout_rate, title, rarity, bet
+        )
+
+        embed = discord.Embed(
+            title=":slot_machine:SAVAR SLOT [DEBUG]",
+            description=f"{msg}\n\nTOTAL ▶ <:savar:1218331362415870032>{now_sv:,}",
+            color=color,
+        )
+        embed.set_author(
+            name=f"{ctx.author.display_name}",
+            icon_url=ctx.author.display_avatar.url
+        )
+        await ctx.send(embed=embed)
+        return
+
+    # --- 通常の賭け金（数値）チェック ---
     if not arg.isdigit():
-        await ctx.send("**:x: 賭け金を数字で指定してください（例: !!slot 100）**")
+        embed = discord.Embed(
+            title=":slot_machine:NEW MASABA SLOT",
+            description="**:x: BET額を指定する場合は、数字のみで入力してください**\n(例: `!!slot 300` )",
+            color=0xFFA500,
+        )
+        embed.set_author(
+                    name=f"{ctx.author.display_name}",
+                    icon_url=ctx.author.display_avatar.url
+                )
+        await ctx.send(embed=embed)
         return
 
     bet = int(arg)
-    if bet < 100:
-        await ctx.send("**:x: 賭け金は100 Savar以上に指定してください**")
+
+    # BET額の上限・下限チェック (100 ~ 500)
+    MIN_BET = 100
+    MAX_BET = 500
+
+# 賭け金の下限チェック
+    if bet < MIN_BET:
+        embed = discord.Embed(
+            title=":slot_machine:NEW MASABA SLOT",
+            description=f"## :x: 賭け金が小さすぎます\n<:savar:1218331362415870032>{MIN_BET:,} 以上に指定してください",
+            color=0xFFA500,
+        )
+        embed.set_author(
+                    name=f"{ctx.author.display_name}",
+                    icon_url=ctx.author.display_avatar.url
+                )
+        await ctx.send(embed=embed)
+        return
+
+    # 賭け金の上限チェック
+    if bet > MAX_BET:
+        embed = discord.Embed(
+            title=":slot_machine:NEW MASABA SLOT",
+            description=f"## :x: 賭け金が大きすぎます\n上限は <:savar:1218331362415870032>{MAX_BET:,} までです",
+            color=0xFFA500,
+        )
+        embed.set_author(
+                    name=f"{ctx.author.display_name}",
+                    icon_url=ctx.author.display_avatar.url
+                )
+        await ctx.send(embed=embed)
         return
 
     # 所持金チェック
     user_sv = svRead(ctx.author.id)
     if user_sv < bet:
-        await ctx.send("**:x: Savarが足りません！**")
+        embed = discord.Embed(
+            title=":slot_machine:NEW MASABA SLOT",
+            description="## :x: Savarが足りませ～ん",
+            color=0xFFA500,
+        )
+        embed.set_author(
+                    name=f"{ctx.author.display_name}",
+                    icon_url=ctx.author.display_avatar.url
+                )
+        await ctx.send(embed=embed)
         return
 
     # スロット実行
     p_id, res, payout_rate, title, rarity = f_slot.spin()
 
-    gain = int(bet * payout_rate)
-    delta = gain - bet
-    now_sv = svAdd(ctx.author.id, delta)
-
-    slot_display = f"{res[0]} {res[1]} {res[2]}"
-
-    if payout_rate > 0:
-        # 新規獲得判定＆保存（ユーザーの表示名 display_name も渡す）
-        is_new = save_achievement(
-            ctx.author.id, ctx.author.name, p_id
-        )
-        new_tag = " ✨ **[ NEW COLLECTION! ]**" if is_new else ""
-
-        msg = (
-            f"# {slot_display}\n"
-            f"### 🎯【[{rarity}] {title}】 (+{payout_rate}倍){new_tag}\n"
-            f"**🎉 WIN! +{gain:,} Savar!**"
-        )
-        color = 0xFFD700
-    else:
-        msg = f"# {slot_display}\n**💦 FELL... -{bet:,} Savar**"
-        color = 0x808080
+    msg, color, now_sv = build_slot_result(
+        p_id, res, payout_rate, title, rarity, bet
+    )
 
     embed = discord.Embed(
-        title=":slot_machine:SAVAR SLOT",
-        description=f"<@{ctx.author.id}>\n{msg}\n\nTOTAL ▶ <:savar:1218331362415870032>{now_sv:,}",
+        title=":slot_machine:NEW MASABA SLOT",
+        description=f"{msg}\n\nTOTAL ▶ <:savar:1218331362415870032>{now_sv:,}",
         color=color,
     )
+    embed.set_author(
+                name=f"{ctx.author.display_name}",
+                icon_url=ctx.author.display_avatar.url
+            )
     await ctx.send(embed=embed)
 
 
@@ -1452,11 +1595,50 @@ async def on_command(ctx):
 @bot.event
 async def on_command_error(ctx, error):
     print(f"[ERROR] コマンドエラー: {error}")
-    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-        embed = discord.Embed(title=":question:UNKNOWN COMMAND", description="# そんなコマンドはない", color=0xff0000)
+
+    # 1. コマンドが存在しない場合
+    if isinstance(error, commands.CommandNotFound):
+        embed = discord.Embed(
+            title=":question:UNKNOWN COMMAND",
+            description="# そんなコマンドはない",
+            color=0xFF0000
+        )
         await ctx.send(embed=embed)
-    else:
-        raise error
+        return
+
+    # 2. コマンド実行中にエラーが発生した場合
+    if isinstance(error, commands.CommandInvokeError):
+        original = error.original
+
+        # A. Google Sheets APIの制限 (429 / Quota exceeded) を検知
+        if isinstance(original, gspread.exceptions.APIError):
+            if original.response.status_code == 429 or "Quota exceeded" in str(original):
+                embed = discord.Embed(
+                    title="⚠️ API LIMIT!",
+                    description="## APIの制限に達しました\nスマン！botの使いすぎというやつです\nちょっと待ってからでヨロピ",
+                    color=0xc00000
+                )
+                try:
+                    await ctx.send(embed=embed)
+                except Exception:
+                    pass
+                return
+
+        # B. Discord APIの制限 (HTTP 429) を検知
+        if isinstance(original, discord.HTTPException) and original.status == 429:
+            embed = discord.Embed(
+                title="⚠️ DISCORD RATE LIMIT",
+                description="## Discordの通信制限が発生しました\n短期間に送信しまくりすぎたのかもしれません\nおちついて♡",
+                color=0xc00000
+            )
+            try:
+                await ctx.send(embed=embed)
+            except Exception:
+                pass
+            return
+
+    # 3. その他の予期せぬエラーはそのまま出力
+    raise error
 
 
 
