@@ -1315,6 +1315,10 @@ async def slot(ctx, arg: str = "100"):
             icon_url=ctx.author.display_avatar.url
         )
         await ctx.send(embed=embed)
+
+            # ★ USR当選時のみメンション文字列を設定
+        if rarity == "USR":
+            await ctx.send(f"# <@{masateo_id}> おいヤバいぞ")
         return
 
     # --- 通常の賭け金（数値）チェック ---
@@ -1397,6 +1401,10 @@ async def slot(ctx, arg: str = "100"):
                 icon_url=ctx.author.display_avatar.url
             )
     await ctx.send(embed=embed)
+
+    # ★ USR当選時のみメンション文字列を設定
+    if rarity == "USR":
+        await ctx.send(f"# <@{masateo_id}> おいヤバいぞ")
 
 
 

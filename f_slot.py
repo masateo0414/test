@@ -80,15 +80,15 @@ E_GAMING = "<a:gaming:1231223018043347044>"
 BLANK = "　　"
 U3000 = "ㅤ"
 
-WIN_RATE = 0.35
+WIN_RATE = 0.33
 
 # 重みの合計が 100 になるように設定
 RARITY_WEIGHTS = {
     "USR": 0.1,  # 当たり1,000回に1回の幻枠 (0.1%)
-    "SSR": 2.0,  # 激レア (2.0%)
+    "SSR": 1.0,  # 激レア (2.0%)
     "SR": 10.9,  # 中当り (10.9%)
     "R": 40.0,  # 小当り・主軸 (37.0%)
-    "N": 47.0,  # 元返し系 (50.0%)
+    "N": 48.5,  # 元返し系 (50.0%)
 }
 
 # 1. 当たりの目リスト（絵文字の個数は1個でも4個でも可変！）
@@ -174,7 +174,7 @@ WINNING_PATTERNS = [
     ("7choen_hoshi", (E_SEVEN, E_CHOEN, E_HOSHI), 1.2, "やや控えめ", "N"),
     ("77choen", (E_SEVEN, E_SEVEN, E_CHOEN), 1.2, "77兆円(日本国家予算の68%)", "N"),
     ("domoto", (E_5000, E_CHOEN, E_WIN), 3, "胴元殺し", "N"),
-    ("higuchi", (E_5000, E_E, E_NN), 1.5, "樋口一葉", "N"),
+    ("higuchi", (E_5000, E_E, E_NN), 1.5, "津田梅子", "N"),
     ("iichinko", (E_II, E_CHINKO, E_HOSHI), 1.2, "わかる", "N"),
     ("hifumi", (E_DICE1, E_DICE2, E_DICE3), -2, "ヒフミ", "R"),
     ("shigoro", (E_DICE4, E_DICE5, E_DICE6), 2, "シゴロ", "R"),
