@@ -80,7 +80,7 @@ E_GAMING = "<a:gaming:1231223018043347044>"
 BLANK = "　　"
 U3000 = "ㅤ"
 
-WIN_RATE = 0.3
+WIN_RATE = 0.35
 
 # 重みの合計が 100 になるように設定
 RARITY_WEIGHTS = {
