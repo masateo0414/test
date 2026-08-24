@@ -1202,7 +1202,7 @@ async def rankUpdate(user, rank):
 
 # // MARK: slot
 @bot.command()
-async def slot(ctx, arg: str = "100"):
+async def slot(ctx, arg: str = "100", target: discord.User = None):
     # 開発者以外には準備中メッセージを表示
     # if ctx.author.id != masateo_id:
     #     embed = discord.Embed(
@@ -1213,10 +1213,35 @@ async def slot(ctx, arg: str = "100"):
     #     await ctx.send(embed=embed)
     #     return
 
-    # ★ 1. 実績表示コマンドはチャンネル制限の前に実行（どのチャンネルでもOK）
+# ★ 1. 実績表示コマンドはチャンネル制限の前に実行
     if arg.lower() in ["achv", "list", "図鑑"]:
-        unlocked = user_achievements.get(ctx.author.id, set())
-        view = SlotAchvView(ctx.author, unlocked)
+        # 閲覧対象ユーザーの決定
+        if target and target != ctx.author:
+            # サーバー主または開発者(masateo_id)のみ許可
+            is_owner = ctx.guild and (ctx.author.id == ctx.guild.owner_id)
+            is_dev = ctx.author.id == masateo_id
+            
+            if not (is_owner or is_dev):
+                await ctx.send("❌ 他人の実績を閲覧できるのはサーバー主のみです。")
+                return
+            target_user = target
+        else:
+            target_user = ctx.author
+
+        unlocked = user_achievements.get(target_user.id, set())
+
+        # 【デバッグ用】コンソールにデータ差分を出力して原因特定
+        all_pattern_ids = set(p[0] for p in f_slot.WINNING_PATTERNS)
+        invalid_ids = unlocked - all_pattern_ids
+
+        print(f"=== [DEBUG] {target_user.display_name} (ID:{target_user.id}) ===")
+        print(f"・メモリ上の実績数: {len(unlocked)} 個")
+        if invalid_ids:
+            print(f"⚠️ WINNING_PATTERNS に存在しないID ({len(invalid_ids)}個): {invalid_ids}")
+        print("==========================================")
+
+        # SlotAchvView に対象ユーザーを渡して Embed 生成
+        view = SlotAchvView(target_user, unlocked)
         await ctx.send(embed=view.create_embed(), view=view)
         return
 
