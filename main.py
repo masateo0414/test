@@ -1406,7 +1406,20 @@ async def slot(ctx, arg: str = "100"):
     if rarity == "USR":
         await ctx.send(f"# <@{masateo_id}> おいヤバいぞ")
 
+@bot.command(name="slot_reload")
+async def slot_reload(ctx):
+    if ctx.author.id != masateo_id: return
 
+    try:
+        load_achievements()  # 既存の読み込み関数を再実行
+        embed = discord.Embed(
+            title=":gear: SLOT SYSTEM RELOAD",
+            description="スプシの情報をリロードしますた",
+            color=0x00FF00
+        )
+        await ctx.send(embed=embed)
+    except Exception as e:
+        await ctx.send(f"❌ {e}")
 
 # // MARK: test
 # !!login_listreset
