@@ -89,16 +89,22 @@ async def on_ready():
         await bot.tree.sync()
         print("tree sync ok")
 
+        # スプレッドシートからの実績読み込み
         load_achievements()
+        print("load_achievements ok")
 
-        # ループがまだ動いていない場合のみ起動
-        if not loop.is_running():
-            loop.start()
-            print("loop started")
+        # 0時定期更新タスクの起動
+        if not daily_reset_task.is_running():
+            daily_reset_task.start()
+            print("0:00_loop started")
+
+        # 突然喋るタスクの起動
+        if not random_talk_task.is_running():
+            random_talk_task.start()
+            print("10sec_loop started")
 
     except Exception as e:
         print("ERROR in on_ready:", e)
-
 
 # // MARK: any function
 #^^v お役立ちfunc v^^
@@ -1688,88 +1694,104 @@ async def on_command_error(ctx, error):
 
 
 
-# // MARK: loop
-#ログインリセット用ループ処理
-@tasks.loop(seconds=10)
-async def loop():
-    global old_now,ch_test_id
+# 日本時間（JST）の深夜0:00:00を定義
+JST = datetime.timezone(datetime.timedelta(hours=9))
+MIDNIGHT = datetime.time(hour=0, minute=0, second=0, tzinfo=JST)
+
+
+# // MARK: 0:00_loop
+@tasks.loop(time=MIDNIGHT)
+async def daily_reset_task():
     try:
-        #print("loop")
-        dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-        now = dt_now.strftime("%H:%M")
+        dt_now = datetime.datetime.now(JST)
         todate = dt_now.strftime("%Y/%m/%d")
+        today_mmdd = dt_now.strftime("%m%d")
+        toyear = dt_now.year
+
         ch_test = bot.get_channel(ch_test_id)
-        ch_normal = bot.get_channel(1133837604991811665) #ノーマル雑談
-        ch_an = bot.get_channel(1329405973588086826) #の、案
-        print(f"{old_now}, {now}")
+        ch_normal = bot.get_channel(1133837604991811665)  # ノーマル雑談
+        ch_an = bot.get_channel(1329405973588086826)  # の、案
 
-        # 00:00 events
-        if old_now != now:
-            print(f"loop at {now}")
-            if now == "00:00":
-            # if True:
+        print(f"[00:00 EVENT] {todate} の更新処理を開始します")
 
-                # login reset
-                await ch_test.send(f"{todate}こうしんおっけー！！")
-                ws_login = workbook.worksheet("login")
-                ws_login.batch_clear(["A:B"])
+        # 1. login reset
+        if ch_test:
+            await ch_test.send(f"{todate}こうしんおっけー！！")
+        ws_login = workbook.worksheet("login")
+        ws_login.batch_clear(["A:B"])
 
-                # birthday
-                today = dt_now.strftime("%m%d")
-                print(today)
-                toyear = dt_now.year
-                ws_birth = workbook.worksheet("birth")
-                birthday_list = ws_birth.col_values(3)
+        # 2. birthday (get_all_values で一括取得してAPI制限を回避)
+        ws_birth = workbook.worksheet("birth")
+        all_birth_rows = ws_birth.get_all_values()
 
-                for i in range(len(birthday_list)):
-                    if today == birthday_list[i][-4:]:
-                        birth_userid = ws_birth.cell(i+1,1).value
-                        birth_year = birthday_list[i][:4]
+        for row in all_birth_rows:
+            if len(row) < 3:
+                continue
+            birth_userid = row[0]  # 1列目: UserID
+            b_date_str = row[2]  # 3列目: YYYYMMDD
 
-                        if birth_year == "0000":
-                            embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
-                            description=
-                            f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY BIRTHDAY!!:tada:",
-                            color=0xff6000)
-                        else:
-                            age = toyear - int(birth_year)
-                            embed = discord.Embed(title=f":birthday:BIRTHDAY REMINDER",
-                            description=
-                            f"## {todate}\n# <@{birth_userid}>\n# :confetti_ball:HAPPY {addJosu(age)} BIRTHDAY!!:tada:",
-                            color=0xff6000)
-                        
-                        await ch_normal.send(embed=embed)
-                
-                # 3days chat
-                ws_3ch = workbook.worksheet("3ch")
-                flag_3ch = ws_3ch.acell("D1").value
-                
-                if flag_3ch == "DERU":
-                    embed = embed_3ch()
-                    await ch_an.send(embed=embed)
-                    ws_3ch.update_acell("D1", "DENAI2")
-                elif flag_3ch == "DENAI2":
-                    ws_3ch.update_acell("D1", "DENAI1")
-                elif flag_3ch == "DENAI1":
-                    ws_3ch.update_acell("D1", "DERU")
+            if today_mmdd == b_date_str[-4:]:
+                birth_year = b_date_str[:4]
+
+                if birth_year == "0000":
+                    embed = discord.Embed(
+                        title=":birthday:BIRTHDAY REMINDER",
+                        description=(
+                            f"## {todate}\n# <@{birth_userid}>\n# "
+                            ":confetti_ball:HAPPY BIRTHDAY!!:tada:"
+                        ),
+                        color=0xFF6000,
+                    )
+                else:
+                    age = toyear - int(birth_year)
+                    embed = discord.Embed(
+                        title=":birthday:BIRTHDAY REMINDER",
+                        description=(
+                            f"## {todate}\n# <@{birth_userid}>\n# "
+                            f":confetti_ball:HAPPY {addJosu(age)} BIRTHDAY!!:tada:"
+                        ),
+                        color=0xFF6000,
+                    )
+
+                if ch_normal:
+                    await ch_normal.send(embed=embed)
+
+        # 3. 3days chat
+        ws_3ch = workbook.worksheet("3ch")
+        flag_3ch = ws_3ch.acell("D1").value
+
+        if flag_3ch == "DERU":
+            embed = embed_3ch()
+            if ch_an:
+                await ch_an.send(embed=embed)
+            ws_3ch.update_acell("D1", "DENAI2")
+        elif flag_3ch == "DENAI2":
+            ws_3ch.update_acell("D1", "DENAI1")
+        elif flag_3ch == "DENAI1":
+            ws_3ch.update_acell("D1", "DERU")
+
     except Exception as e:
-            print(f"Loop エラー発生: {e}")
+        print(f"0時更新処理 エラー発生: {e}")
 
 
-    
-    # 現在時刻更新
-    old_now = now
-
-    # 突然喋る
+# // MARK: 10sec_loop
+@tasks.loop(seconds=10)
+async def random_talk_task():
     if random.randrange(50000) == 0:
-        ws_reply = workbook.worksheet("reply")
-        meisi_list = ws_reply.col_values(2)
-        randomRep_dic = ws_reply.col_values(3)
-        randomRep_dic2 = ws_reply.col_values(4)
-        reply = f_reply.randomSay(meisi_list, randomRep_dic, randomRep_dic2)
+        try:
+            ch_normal = bot.get_channel(1133837604991811665)
+            ws_reply = workbook.worksheet("reply")
+            meisi_list = ws_reply.col_values(2)
+            randomRep_dic = ws_reply.col_values(3)
+            randomRep_dic2 = ws_reply.col_values(4)
+            reply = f_reply.randomSay(
+                meisi_list, randomRep_dic, randomRep_dic2
+            )
 
-        # channel = bot.get_channel(ch_test)
-        await ch_normal.send(reply)
+            if ch_normal:
+                await ch_normal.send(reply)
+        except Exception as e:
+            print(f"突然喋る エラー: {e}")
 
 # 3日チャンネル抽選用
 def embed_3ch():
